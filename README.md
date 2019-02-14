@@ -7,11 +7,12 @@ Resource packer and widget for super fast in-browser font picking experience.
 Build Resource
 --------------
 
-1. prepare your font files under ```fonts``` directory.
+1. prepare your font files under ```tool/fonts``` directory.
     1. choosefont will traverse and find all ttf files automatically. 
     2. font named after its filename.
     3. use METADATA.pb in the same folder for category. ( check google-fonts for example.
     4. use meta.json in root directory for additional font information ( check meta.json in this repo for example)
+    5. for any font in the xl-fontset format, you can put a symlink to it as ```fontset``` directory under tool/.
 2. execute following:
 
     lsc main
