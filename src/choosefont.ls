@@ -1,9 +1,16 @@
-ChooseFont = ({node, meta-url, type, wrapper, itemClass, cols, base}) ->
-  if node? =>
-    node = if typeof(node) == \string => document.querySelector(node) else node
-    node.classList.add \choosefont
-  @ <<< {node, meta-url, type, wrapper, itemClass, cols, base}
+ChooseFont = (opt = {}) ->
+  @ <<< opt{root, meta-url, type, wrapper, itemClass, cols, base}
+  @root = if typeof(@root) == \string => document.querySelector(@root) else @root
+  @root.classList.add \choosefont
+  @node = @root.querySelector '.choosefont-content'
+  @input = @root.querySelector('input')
   if !@cols => @cols = 4
+  if !@node =>
+    @node = document.createElement("div")
+    @node.classList.add \choosefont-content
+    @root.appendChild @node
+  @root.querySelector '.btn-group'
+  @filter.value = {name: '', category: ''}
   return @
 
 ChooseFont.prototype = Object.create(Object.prototype) <<< do
@@ -16,7 +23,8 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
           <span>#{font.name}</span>
         </div></div>
       """
-  filter: ({name, category}) ->
+  filter: (f) ->
+    {name, category} = f or @filter.value or {}
     name = (name or '').toLowerCase!
     list = @fonts.list.filter ->
       (!name or ~it.name.toLowerCase!indexOf(name)) and
@@ -35,6 +43,7 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
         scrollElem: @node
         contentElem: @node.querySelector('.clusterize-content')
         rows_in_block: 50
+        no_data_text: 'found nothing ...'
     @cluster.update html
 
   find: (names = []) ->
@@ -55,11 +64,27 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
       res font
 
   prepare: ->
-    if @node => @node.addEventListener \click, (e) ~>
-      idx = e.target.getAttribute \data-idx
+    @root.addEventListener \click, (e) ~>
+      tgt = e.target
+      idx = tgt.getAttribute \data-idx
       font = @fonts.list[idx]
-      if !font => return
-      @load font
+      if font => return @load font
+      category = tgt.getAttribute \data-category
+      if !(category?) => return
+      f = @filter.value or {}
+      Array.from(@root.querySelectorAll('*[data-category]')).map -> it.classList.remove \active
+      c = (category or '').replace(' ', '_').toUpperCase!
+      if f.category == c or c == \ALL =>
+        f.category = null
+      else
+        tgt.classList.add \active
+        f.category = c
+      @root.querySelector('*[data-category-holder]').innerText = category or 'Family...'
+      @filter f
+    if @input => @input.addEventListener \keyup, (e) ~>
+      @filter.value.name = e.target.value
+      @filter!
+      return @
 
     @fonts = list: @meta.fonts, hash: {}
     for idx from 0 til @meta.fonts.length =>

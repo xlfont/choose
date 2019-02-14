@@ -18,16 +18,19 @@ html
 
     link(rel="stylesheet",type="text/css",href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css")
     link(rel="stylesheet",type="text/css",href="assets/clusterize.css")
+    link(rel="stylesheet",type="text/css",href="assets/ldcv/ldcv.min.css")
     link(rel="stylesheet",type="text/css",href="index.css")
     link(rel="stylesheet",type="text/css",href="assets/choosefont.css")
     script(src="https://code.jquery.com/jquery-3.3.1.slim.min.js")
     script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js")
     script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js")
     script(src="assets/xfl.js")
+    script(src="assets/ldcv/ldcv.min.js")
     script(src="assets/choosefont.js")
     script(src="assets/clusterize.min.js")
   body: #root
-    include modal.pug
+    include assets/choosefont.pug
+    .ldcv.default-size: .base: .inner: +choosefont()
     br
     h1 choosefont.js
     hr
@@ -42,7 +45,7 @@ html
     hr
     .row
       .col-sm-3
-        .btn.btn-outline-dark.btn-lg.mb-2.btn-block(data-toggle="modal",data-target="#demo-modal") Choose in Dialog ...
+        .btn.btn-outline-dark.btn-lg.mb-2.btn-block(onclick="ldcv.toggle();") Choose in Dialog ...
         .dropdown.mb-2
           .btn.btn-outline-dark.dropdown-toggle.btn-lg.btn-block(data-toggle="dropdown") Choose via Dropdown
           #demo-dropdown.dropdown-menu(style="width:100%")

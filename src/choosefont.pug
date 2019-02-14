@@ -1,0 +1,18 @@
+//- module
+mixin choosefont
+  .choosefont.toolbar
+    .choosefont-head.form-inline(style="justify-content:center")
+      .dropdown
+        .btn.btn-outline-secondary.dropdown-toggle.mr-2(data-toggle="dropdown",data-category-holder="true") Family ...
+        .dropdown-menu
+          each name in ["All", "Serif", "Sans Serif", "Display", "Handwriting", "Monospace", "Chinese"]
+            a.dropdown-item(href="#",data-category=name) #{name}
+      //-.btn-group.mr-2
+        .btn.btn-outline-secondary Serif
+        .btn.btn-outline-secondary Sans Serif
+        .btn.btn-outline-secondary Display
+        .btn.btn-outline-secondary Handwriting
+        .btn.btn-outline-secondary Monospace
+        .btn.btn-outline-secondary Chinese
+      input.form-control
+    .choosefont-content
