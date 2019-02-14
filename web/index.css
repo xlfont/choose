@@ -62,3 +62,6 @@ h3 {
 .choosefont.list-group .item span {
   display: none;
 }
+.ldcv.default-size .base {
+  width: 1024px;
+}

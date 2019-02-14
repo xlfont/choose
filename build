@@ -10,9 +10,12 @@ echo "minifying choosefont.css ..."
 ./node_modules/.bin/uglifycss dist/choosefont.css > dist/choosefont.min.css
 echo "Copy src/choosefont.pug to dist/choosefont.pug..."
 cp src/choosefont.pug dist/choosefont.pug
-echo "copy files into website... "
+echo "copy assets to dist/... "
+mkdir -p dist/fontinfo
+cp tool/assets/* dist/fontinfo/
+echo "copy files to web/... "
 mkdir -p web/assets/
 mkdir -p web/assets/fontinfo
-cp dist/* web/assets/
+cp -R dist/* web/assets/
 cp tool/assets/* web/assets/fontinfo/
 echo "done."

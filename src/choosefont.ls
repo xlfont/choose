@@ -1,5 +1,5 @@
 ChooseFont = (opt = {}) ->
-  @ <<< opt{root, meta-url, type, wrapper, itemClass, cols, base}
+  @ <<< opt{root, meta-url, type, wrapper, itemClass, cols, base, disable-filter, default-filter}
   @root = if typeof(@root) == \string => document.querySelector(@root) else @root
   @root.classList.add \choosefont
   @node = @root.querySelector '.choosefont-content'
@@ -17,8 +17,10 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
   wrap: (font, idx) ->
     if @wrapper => return @wrapper font, idx
     if !@type or @type == \grid or @type == \list =>
+      c = (@itemClass or '')
+      if @disable-filter and @disable-filter(font,idx) => c = c + " disabled"
       font.html = """
-        <div class="item #{@itemClass or ''}" data-idx="#idx"><div class="inner">
+        <div class="item #c" data-idx="#idx"><div class="inner">
           <div class="img" style="background-position:#{font.x}px #{font.y}px"></div>
           <span>#{font.name}</span>
         </div></div>
@@ -68,7 +70,7 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
       tgt = e.target
       idx = tgt.getAttribute \data-idx
       font = @fonts.list[idx]
-      if font => return @load font
+      if font => return if font.disabled => null else @load font
       category = tgt.getAttribute \data-category
       if !(category?) => return
       f = @filter.value or {}
@@ -87,6 +89,8 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
       return @
 
     @fonts = list: @meta.fonts, hash: {}
+    if @default-filter => @fonts.list = @fonts.list.filter @default-filter
+    if @disable-filter => @fonts.list.map (d,i) ~> d.disabled = @disable-filter d,i
     for idx from 0 til @meta.fonts.length =>
       font = @meta.fonts[idx]
       @fonts.hash[font.name] = font <<< do

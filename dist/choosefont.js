@@ -9,6 +9,8 @@ ChooseFont = function(opt){
   this.itemClass = opt.itemClass;
   this.cols = opt.cols;
   this.base = opt.base;
+  this.disableFilter = opt.disableFilter;
+  this.defaultFilter = opt.defaultFilter;
   this.root = typeof this.root === 'string'
     ? document.querySelector(this.root)
     : this.root;
@@ -32,11 +34,16 @@ ChooseFont = function(opt){
 };
 ChooseFont.prototype = import$(Object.create(Object.prototype), {
   wrap: function(font, idx){
+    var c;
     if (this.wrapper) {
       return this.wrapper(font, idx);
     }
     if (!this.type || this.type === 'grid' || this.type === 'list') {
-      return font.html = "<div class=\"item " + (this.itemClass || '') + "\" data-idx=\"" + idx + "\"><div class=\"inner\">\n  <div class=\"img\" style=\"background-position:" + font.x + "px " + font.y + "px\"></div>\n  <span>" + font.name + "</span>\n</div></div>";
+      c = this.itemClass || '';
+      if (this.disableFilter && this.disableFilter(font, idx)) {
+        c = c + " disabled";
+      }
+      return font.html = "<div class=\"item " + c + "\" data-idx=\"" + idx + "\"><div class=\"inner\">\n  <div class=\"img\" style=\"background-position:" + font.x + "px " + font.y + "px\"></div>\n  <span>" + font.name + "</span>\n</div></div>";
     }
   },
   filter: function(f){
@@ -110,7 +117,9 @@ ChooseFont.prototype = import$(Object.create(Object.prototype), {
       idx = tgt.getAttribute('data-idx');
       font = this$.fonts.list[idx];
       if (font) {
-        return this$.load(font);
+        return font.disabled
+          ? null
+          : this$.load(font);
       }
       category = tgt.getAttribute('data-category');
       if (!(category != null)) {
@@ -141,6 +150,14 @@ ChooseFont.prototype = import$(Object.create(Object.prototype), {
       list: this.meta.fonts,
       hash: {}
     };
+    if (this.defaultFilter) {
+      this.fonts.list = this.fonts.list.filter(this.defaultFilter);
+    }
+    if (this.disableFilter) {
+      this.fonts.list.map(function(d, i){
+        return d.disabled = this$.disableFilter(d, i);
+      });
+    }
     for (i$ = 0, to$ = this.meta.fonts.length; i$ < to$; ++i$) {
       idx = i$;
       font = this.meta.fonts[idx];

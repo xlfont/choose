@@ -4,7 +4,8 @@ fontbase = "https://plotdb.github.io/xl-fontset/alpha"
 fontinfo = "assets/fontinfo"
 textarea = document.querySelector \#demo-textarea
 
-modal-chooser = new ChooseFont {root: '.ldcv .choosefont', meta-url: "#fontinfo/meta.json", base: fontbase}
+modal-chooser = new ChooseFont do
+  root: '.ldcv .choosefont', meta-url: "#fontinfo/meta.json", base: fontbase
 modal-chooser.init!
 modal-chooser.on \choose, -> ldcv.toggle false
 
