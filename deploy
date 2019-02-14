@@ -5,10 +5,6 @@ git clone git@github.com:plotdb/choosefont.js --depth 1 -b gh-pages _public
 cd _public
 git rm -r *
 cp -R ../web/ ./
-mkdir -p assets/
-mkdir -p assets/fontinfo
-cp ../dist/* assets/
-cp ../tool/assets/* assets/fontinfo
 git add *
 git commit -m "regen for $REV"
 git push

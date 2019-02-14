@@ -8,4 +8,11 @@ echo "minifying choosefont.js ..."
 ./node_modules/.bin/uglifyjs dist/choosefont.js > dist/choosefont.min.js
 echo "minifying choosefont.css ..."
 ./node_modules/.bin/uglifycss dist/choosefont.css > dist/choosefont.min.css
+echo "Copy src/choosefont.pug to dist/choosefont.pug..."
+cp src/choosefont.pug dist/choosefont.pug
+echo "copy files into website... "
+mkdir -p web/assets/
+mkdir -p web/assets/fontinfo
+cp dist/* web/assets/
+cp tool/assets/* web/assets/fontinfo/
 echo "done."
