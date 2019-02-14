@@ -69,7 +69,7 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
     @root.addEventListener \click, (e) ~>
       tgt = e.target
       idx = tgt.getAttribute \data-idx
-      font = @fonts.list[idx]
+      font = @meta.fonts[idx]
       if font => return if font.disabled => null else @load font
       category = tgt.getAttribute \data-category
       if !(category?) => return
@@ -89,8 +89,8 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
       return @
 
     @fonts = list: @meta.fonts, hash: {}
+    if @disable-filter => @meta.fonts.map (d,i) ~> d.disabled = @disable-filter(d,i) and @default-filter(d,i)
     if @default-filter => @fonts.list = @fonts.list.filter @default-filter
-    if @disable-filter => @fonts.list.map (d,i) ~> d.disabled = @disable-filter d,i
     for idx from 0 til @meta.fonts.length =>
       font = @meta.fonts[idx]
       @fonts.hash[font.name] = font <<< do

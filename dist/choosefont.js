@@ -115,7 +115,7 @@ ChooseFont.prototype = import$(Object.create(Object.prototype), {
       var tgt, idx, font, category, f, c;
       tgt = e.target;
       idx = tgt.getAttribute('data-idx');
-      font = this$.fonts.list[idx];
+      font = this$.meta.fonts[idx];
       if (font) {
         return font.disabled
           ? null
@@ -150,13 +150,13 @@ ChooseFont.prototype = import$(Object.create(Object.prototype), {
       list: this.meta.fonts,
       hash: {}
     };
+    if (this.disableFilter) {
+      this.meta.fonts.map(function(d, i){
+        return d.disabled = this$.disableFilter(d, i) && this$.defaultFilter(d, i);
+      });
+    }
     if (this.defaultFilter) {
       this.fonts.list = this.fonts.list.filter(this.defaultFilter);
-    }
-    if (this.disableFilter) {
-      this.fonts.list.map(function(d, i){
-        return d.disabled = this$.disableFilter(d, i);
-      });
     }
     for (i$ = 0, to$ = this.meta.fonts.length; i$ < to$; ++i$) {
       idx = i$;
