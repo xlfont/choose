@@ -58,6 +58,7 @@
   width: 100%;
   z-index: 2;
   background: #fff;
+  text-align: center;
 }
 .choosefont input {
   outline: none;
