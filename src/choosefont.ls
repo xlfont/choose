@@ -58,9 +58,10 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
     family = if !font.family.length => ""
     else "-" + (if font.family.indexOf(\Regular) => \Regular else font.family.0)
     path = "#{@base}/#{font.name}#family#{if font.isSet => '/' else '.ttf'}"
-    if xfl? => xfl.load path, ~>
-      @fire \choose, it
-      res it
+    if xfl? =>
+      @fire \loading.font, font
+      # give it a little break so caller might be able to handle 'loading.font' better
+      setTimeout (~> xfl.load path, (~> @fire(\choose, it); res it) ), 10
     else 
       @fire \choose.map, font
       res font

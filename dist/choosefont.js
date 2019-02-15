@@ -99,10 +99,13 @@ ChooseFont.prototype = import$(Object.create(Object.prototype), {
           : font.family[0]);
       path = this$.base + "/" + font.name + family + (font.isSet ? '/' : '.ttf');
       if (typeof xfl != 'undefined' && xfl !== null) {
-        return xfl.load(path, function(it){
-          this$.fire('choose', it);
-          return res(it);
-        });
+        this$.fire('loading.font', font);
+        return setTimeout(function(){
+          return xfl.load(path, function(it){
+            this$.fire('choose', it);
+            return res(it);
+          });
+        }, 10);
       } else {
         this$.fire('choose.map', font);
         return res(font);
