@@ -14,6 +14,15 @@ ChooseFont = (opt = {}) ->
   return @
 
 ChooseFont.prototype = Object.create(Object.prototype) <<< do
+  apply-filters: (o) ->
+    if o? => <[disableFilter defaultFilter]>.map ~> if o[it] => @[it] = o[it]
+    if @disable-filter =>
+      Array.from(@root.querySelectorAll('.item')).map (d,i) ~>
+        f = @meta.fonts[d.getAttribute(\data-idx)]
+        f.disabled = @disable-filter(d,i) and (@default-filter or (->))(d,i)
+        d.classList[if f.disabled => \add else \remove] \disabled
+    #TODO support default-filter
+
   wrap: (font, idx) ->
     if @wrapper => return @wrapper font, idx
     if !@type or @type == \grid or @type == \list =>
@@ -62,7 +71,7 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
       @fire \loading.font, font
       # give it a little break so caller might be able to handle 'loading.font' better
       setTimeout (~> xfl.load path, (~> @fire(\choose, it); res it) ), 10
-    else 
+    else
       @fire \choose.map, font
       res font
 
@@ -113,7 +122,7 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
       if line.length => html.push line
       @clusterize html.map(-> """<div class="line"><div class="inner">#{it.join('')}</div></div>""")
 
-    else if @type == \list => 
+    else if @type == \list =>
       @clusterize list.map(-> it.html)
 
   on: (name, cb) -> @{}handler[][name].push cb

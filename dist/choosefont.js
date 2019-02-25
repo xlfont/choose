@@ -33,6 +33,25 @@ ChooseFont = function(opt){
   return this;
 };
 ChooseFont.prototype = import$(Object.create(Object.prototype), {
+  applyFilters: function(o){
+    var this$ = this;
+    if (o != null) {
+      ['disableFilter', 'defaultFilter'].map(function(it){
+        if (o[it]) {
+          return this$[it] = o[it];
+        }
+      });
+    }
+    if (this.disableFilter) {
+      console.log(this.meta);
+      return Array.from(this.root.querySelectorAll('.item')).map(function(d, i){
+        var f;
+        f = this$.meta.fonts[d.getAttribute('data-idx')];
+        f.disabled = this$.disableFilter(d, i) && this$ === d || function(){}(d, i);
+        return d.classList[f.disabled ? 'add' : 'remove']('disabled');
+      });
+    }
+  },
   wrap: function(font, idx){
     var c;
     if (this.wrapper) {
