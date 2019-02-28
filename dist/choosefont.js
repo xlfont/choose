@@ -43,11 +43,10 @@ ChooseFont.prototype = import$(Object.create(Object.prototype), {
       });
     }
     if (this.disableFilter) {
-      console.log(this.meta);
       return Array.from(this.root.querySelectorAll('.item')).map(function(d, i){
         var f;
         f = this$.meta.fonts[d.getAttribute('data-idx')];
-        f.disabled = this$.disableFilter(d, i) && this$ === d || function(){}(d, i);
+        f.disabled = this$.disableFilter(d, i);
         return d.classList[f.disabled ? 'add' : 'remove']('disabled');
       });
     }

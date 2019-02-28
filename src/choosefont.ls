@@ -19,7 +19,7 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
     if @disable-filter =>
       Array.from(@root.querySelectorAll('.item')).map (d,i) ~>
         f = @meta.fonts[d.getAttribute(\data-idx)]
-        f.disabled = @disable-filter(d,i) and (@default-filter or (->))(d,i)
+        f.disabled = @disable-filter(d,i) # and !(@default-filter or (->true))(d,i)
         d.classList[if f.disabled => \add else \remove] \disabled
     #TODO support default-filter
 
