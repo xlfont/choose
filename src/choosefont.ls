@@ -13,23 +13,25 @@ ChooseFont = (opt = {}) ->
   @filter.value = {name: '', category: ''}
   return @
 
+ChooseFont.variants = <[Italic Regular Bold ExtraBold Medium SemiBold ExtraLight Light Thin Black BlackItalic BoldItalic ExtraBoldItalic MediumItalic LightItalic ThinItalic SemiBoldItalic ExtraLightItalic DemiBold Heavy UltraLight]>
+
 ChooseFont.prototype = Object.create(Object.prototype) <<< do
   apply-filters: (o) ->
     if o? => <[disableFilter defaultFilter]>.map ~> if o[it] => @[it] = o[it]
-    if @disable-filter =>
-      Array.from(@root.querySelectorAll('.item')).map (d,i) ~>
-        f = @meta.fonts[d.getAttribute(\data-idx)]
-        f.disabled = @disable-filter(d,i) # and !(@default-filter or (->true))(d,i)
-        d.classList[if f.disabled => \add else \remove] \disabled
+    if @disable-filter and @meta =>
+      for idx from 0 til @meta.fonts.length =>
+        f = @meta.fonts[idx]
+        f.disabled = @disable-filter(f,idx) # and !(@default-filter or (->true))(d,i)
+        if !f.disabled => f.html = f.html.replace('disabled', 'disabled-toggle')
+      @render!
     #TODO support default-filter
 
   wrap: (font, idx) ->
     if @wrapper => return @wrapper font, idx
     if !@type or @type == \grid or @type == \list =>
       c = (@itemClass or '')
-      if @disable-filter and @disable-filter(font,idx) => c = c + " disabled"
       font.html = """
-        <div class="item #c" data-idx="#idx"><div class="inner">
+        <div class="item #c disabled" data-idx="#idx"><div class="inner">
           <div class="img" style="background-position:#{font.x}px #{font.y}px"></div>
           <span>#{font.name}</span>
         </div></div>
@@ -59,7 +61,12 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
 
   find: (names = []) ->
     names
-      .map -> it.split(\-).filter(->it)
+      .map ->
+        ret = it.split(\-)
+        [name,family] = if ret[* - 1] in ChooseFont.variants =>
+          [ret.slice(0, ret.length - 1).join('-'), ret[* - 1]]
+        else [ret.join('-'), null]
+        return [name, family]
       .map ~> [@fonts.hash[it.0], it.1]
       .filter -> it.0
 
@@ -99,7 +106,7 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
       return @
 
     @fonts = list: @meta.fonts, hash: {}
-    if @disable-filter => @meta.fonts.map (d,i) ~> d.disabled = @disable-filter(d,i) and @default-filter(d,i)
+    if @disable-filter => @meta.fonts.map (d,i) ~> d.disabled = @disable-filter(d,i)
     if @default-filter => @fonts.list = @fonts.list.filter @default-filter
     for idx from 0 til @meta.fonts.length =>
       font = @meta.fonts[idx]
@@ -107,10 +114,11 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
         x: -(idx % @meta.dim.col) * @meta.dim.width
         y: -Math.floor(idx / @meta.dim.col) * @meta.dim.height
       @wrap font, idx
+    @apply-filters!
     @render!
 
   render: (list) ->
-    if !@node => return
+    if !@node or !@fonts => return
     if !list => list = @fonts.list
     if @type == \grid or !@type =>
       [html, line] = [[], []]

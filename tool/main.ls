@@ -3,6 +3,8 @@ require! <[fs fs-extra path text-to-svg svg-path-bounds sharp pngquant progress 
 dim = {width: 400, height: 50, col: 5, padding: 10}
 fontset-dir = "fontset"
 
+variants = <[Italic Regular Bold ExtraBold Medium SemiBold ExtraLight Light Thin Black BlackItalic BoldItalic ExtraBoldItalic MediumItalic LightItalic ThinItalic SemiBoldItalic ExtraLightItalic DemiBold Heavy UltraLight]>
+
 metamap = {}
 if fs.exists-sync(\meta.json) => metamap = JSON.parse(fs.read-file-sync \meta.json .toString!)
 
@@ -31,7 +33,8 @@ get-font-list = (parent, fonthash = {}) ->
     else if /\.ttf$/.exec(file) =>
       ret = path.basename(file).replace(/\.ttf$/, '').split(\-)
       if !ret.0 => continue
-      [name, family] = [ret.0, ret.1]
+      [name,family] = if ret[* - 1] in variants => [ret.slice(0, ret.length - 1).join('-'), ret[* - 1]]
+      else [ret.join('-'), null]
       is-set = fs.exists-sync "#fontset-dir/#name/charmap.txt"
       if !fonthash[name] => fonthash[name] = {name: name, family: {}}
       if is-set => fonthash[name].is-set = true

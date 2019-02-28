@@ -32,9 +32,10 @@ ChooseFont = function(opt){
   };
   return this;
 };
+ChooseFont.variants = ['Italic', 'Regular', 'Bold', 'ExtraBold', 'Medium', 'SemiBold', 'ExtraLight', 'Light', 'Thin', 'Black', 'BlackItalic', 'BoldItalic', 'ExtraBoldItalic', 'MediumItalic', 'LightItalic', 'ThinItalic', 'SemiBoldItalic', 'ExtraLightItalic', 'DemiBold', 'Heavy', 'UltraLight'];
 ChooseFont.prototype = import$(Object.create(Object.prototype), {
   applyFilters: function(o){
-    var this$ = this;
+    var i$, to$, idx, f, this$ = this;
     if (o != null) {
       ['disableFilter', 'defaultFilter'].map(function(it){
         if (o[it]) {
@@ -42,13 +43,16 @@ ChooseFont.prototype = import$(Object.create(Object.prototype), {
         }
       });
     }
-    if (this.disableFilter) {
-      return Array.from(this.root.querySelectorAll('.item')).map(function(d, i){
-        var f;
-        f = this$.meta.fonts[d.getAttribute('data-idx')];
-        f.disabled = this$.disableFilter(d, i);
-        return d.classList[f.disabled ? 'add' : 'remove']('disabled');
-      });
+    if (this.disableFilter && this.meta) {
+      for (i$ = 0, to$ = this.meta.fonts.length; i$ < to$; ++i$) {
+        idx = i$;
+        f = this.meta.fonts[idx];
+        f.disabled = this.disableFilter(f, idx);
+        if (!f.disabled) {
+          f.html = f.html.replace('disabled', 'disabled-toggle');
+        }
+      }
+      return this.render();
     }
   },
   wrap: function(font, idx){
@@ -58,10 +62,7 @@ ChooseFont.prototype = import$(Object.create(Object.prototype), {
     }
     if (!this.type || this.type === 'grid' || this.type === 'list') {
       c = this.itemClass || '';
-      if (this.disableFilter && this.disableFilter(font, idx)) {
-        c = c + " disabled";
-      }
-      return font.html = "<div class=\"item " + c + "\" data-idx=\"" + idx + "\"><div class=\"inner\">\n  <div class=\"img\" style=\"background-position:" + font.x + "px " + font.y + "px\"></div>\n  <span>" + font.name + "</span>\n</div></div>";
+      return font.html = "<div class=\"item " + c + " disabled\" data-idx=\"" + idx + "\"><div class=\"inner\">\n  <div class=\"img\" style=\"background-position:" + font.x + "px " + font.y + "px\"></div>\n  <span>" + font.name + "</span>\n</div></div>";
     }
   },
   filter: function(f){
@@ -97,9 +98,12 @@ ChooseFont.prototype = import$(Object.create(Object.prototype), {
     var this$ = this;
     names == null && (names = []);
     return names.map(function(it){
-      return it.split('-').filter(function(it){
-        return it;
-      });
+      var ret, ref$, name, family;
+      ret = it.split('-');
+      ref$ = in$(ret[ret.length - 1], ChooseFont.variants)
+        ? [ret.slice(0, ret.length - 1).join('-'), ret[ret.length - 1]]
+        : [ret.join('-'), null], name = ref$[0], family = ref$[1];
+      return [name, family];
     }).map(function(it){
       return [this$.fonts.hash[it[0]], it[1]];
     }).filter(function(it){
@@ -173,7 +177,7 @@ ChooseFont.prototype = import$(Object.create(Object.prototype), {
     };
     if (this.disableFilter) {
       this.meta.fonts.map(function(d, i){
-        return d.disabled = this$.disableFilter(d, i) && this$.defaultFilter(d, i);
+        return d.disabled = this$.disableFilter(d, i);
       });
     }
     if (this.defaultFilter) {
@@ -188,11 +192,12 @@ ChooseFont.prototype = import$(Object.create(Object.prototype), {
       });
       this.wrap(font, idx);
     }
+    this.applyFilters();
     return this.render();
   },
   render: function(list){
     var ref$, html, line, i$, to$, idx;
-    if (!this.node) {
+    if (!this.node || !this.fonts) {
       return;
     }
     if (!list) {
@@ -273,4 +278,9 @@ function import$(obj, src){
   var own = {}.hasOwnProperty;
   for (var key in src) if (own.call(src, key)) obj[key] = src[key];
   return obj;
+}
+function in$(x, xs){
+  var i = -1, l = xs.length >>> 0;
+  while (++i < l) if (x === xs[i]) return true;
+  return false;
 }
