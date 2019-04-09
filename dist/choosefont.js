@@ -11,6 +11,7 @@ ChooseFont = function(opt){
   this.base = opt.base;
   this.disableFilter = opt.disableFilter;
   this.defaultFilter = opt.defaultFilter;
+  this.opt = opt;
   this.root = typeof this.root === 'string'
     ? document.querySelector(this.root)
     : this.root;
@@ -35,7 +36,7 @@ ChooseFont = function(opt){
 ChooseFont.variants = ['Italic', 'Regular', 'Bold', 'ExtraBold', 'Medium', 'SemiBold', 'ExtraLight', 'Light', 'Thin', 'Black', 'BlackItalic', 'BoldItalic', 'ExtraBoldItalic', 'MediumItalic', 'LightItalic', 'ThinItalic', 'SemiBoldItalic', 'ExtraLightItalic', 'DemiBold', 'Heavy', 'UltraLight'];
 ChooseFont.prototype = import$(Object.create(Object.prototype), {
   applyFilters: function(o){
-    var i$, to$, idx, f, this$ = this;
+    var i$, to$, idx, f, disabled, this$ = this;
     if (o != null) {
       ['disableFilter', 'defaultFilter'].map(function(it){
         if (o[it]) {
@@ -47,9 +48,12 @@ ChooseFont.prototype = import$(Object.create(Object.prototype), {
       for (i$ = 0, to$ = this.meta.fonts.length; i$ < to$; ++i$) {
         idx = i$;
         f = this.meta.fonts[idx];
-        f.disabled = this.disableFilter(f, idx);
-        if (!f.disabled) {
-          f.html = f.html.replace('disabled', 'disabled-toggle');
+        disabled = this.disableFilter(f, idx);
+        f[this.opt.limitHard ? 'disabled' : 'limited'] = disabled;
+        if (f.limited) {
+          f.html = f.html.replace('disabled', 'limited');
+        } else if (!f.disabled) {
+          f.html = f.html.replace('disabled', '');
         }
       }
       return this.render();
@@ -124,12 +128,19 @@ ChooseFont.prototype = import$(Object.create(Object.prototype), {
         this$.fire('loading.font', font);
         return setTimeout(function(){
           return xfl.load(path, function(it){
-            this$.fire('choose', it);
+            if (font.limited) {
+              it.limited = true;
+            }
+            this$.fire('choose', it, {
+              limited: font.limited
+            });
             return res(it);
           });
         }, 10);
       } else {
-        this$.fire('choose.map', font);
+        this$.fire('choose.map', font, {
+          limited: font.limited
+        });
         return res(font);
       }
     });
@@ -177,7 +188,7 @@ ChooseFont.prototype = import$(Object.create(Object.prototype), {
     };
     if (this.disableFilter) {
       this.meta.fonts.map(function(d, i){
-        return d.disabled = this$.disableFilter(d, i);
+        return d[this$.opt.limitHard ? 'disabled' : 'limited'] = this$.disableFilter(d, i);
       });
     }
     if (this.defaultFilter) {

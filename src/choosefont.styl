@@ -29,6 +29,19 @@ height = 50px
     right: 0
     z-index: 1
 
+.choosefont .item.limited
+  background: #fafbfc
+.choosefont .item.limited:hover
+  &:before
+    content: "\e90b"
+    font-family: ldi
+    display: block
+    position: absolute
+    bottom: 5px
+    right: 10px
+    z-index: 2
+    opacity: 0.5
+
 .choosefont .item.disabled
   opacity: 0.3
   background: rgba(0,0,0,.1)

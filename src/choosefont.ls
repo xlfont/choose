@@ -1,5 +1,6 @@
 ChooseFont = (opt = {}) ->
   @ <<< opt{root, meta-url, type, wrapper, itemClass, cols, base, disable-filter, default-filter}
+  @opt = opt
   @root = if typeof(@root) == \string => document.querySelector(@root) else @root
   @root.classList.add \choosefont
   @node = @root.querySelector '.choosefont-content'
@@ -21,8 +22,10 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
     if @disable-filter and @meta =>
       for idx from 0 til @meta.fonts.length =>
         f = @meta.fonts[idx]
-        f.disabled = @disable-filter(f,idx) # and !(@default-filter or (->true))(d,i)
-        if !f.disabled => f.html = f.html.replace('disabled', 'disabled-toggle')
+        disabled = @disable-filter(f,idx) # and !(@default-filter or (->true))(d,i)
+        f[if @opt.limit-hard => \disabled else \limited] = disabled
+        if f.limited => f.html = f.html.replace \disabled, \limited
+        else if !f.disabled => f.html = f.html.replace \disabled, ''
       @render!
     #TODO support default-filter
 
@@ -77,9 +80,12 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
     if xfl? =>
       @fire \loading.font, font
       # give it a little break so caller might be able to handle 'loading.font' better
-      setTimeout (~> xfl.load path, (~> @fire(\choose, it); res it) ), 10
+      setTimeout (~> xfl.load path, (~>
+        if font.limited => it.limited = true
+        @fire(\choose, it, {limited: font.limited}); res it
+      )), 10
     else
-      @fire \choose.map, font
+      @fire \choose.map, font, {limited: font.limited}
       res font
 
   prepare: ->
@@ -106,7 +112,8 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
       return @
 
     @fonts = list: @meta.fonts, hash: {}
-    if @disable-filter => @meta.fonts.map (d,i) ~> d.disabled = @disable-filter(d,i)
+    if @disable-filter => @meta.fonts.map (d,i) ~>
+      d[if @opt.limit-hard => \disabled else \limited] = @disable-filter(d,i)
     if @default-filter => @fonts.list = @fonts.list.filter @default-filter
     for idx from 0 til @meta.fonts.length =>
       font = @meta.fonts[idx]
