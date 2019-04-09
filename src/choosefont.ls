@@ -24,8 +24,8 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
         f = @meta.fonts[idx]
         disabled = @disable-filter(f,idx) # and !(@default-filter or (->true))(d,i)
         f[if @opt.limit-hard => \disabled else \limited] = disabled
-        if f.limited => f.html = f.html.replace \disabled, \limited
-        else if !f.disabled => f.html = f.html.replace \disabled, ''
+        if f.limited => f.html = f.html.replace /disabled|enabled/, \limited
+        else if !f.disabled => f.html = f.html.replace /disabled|limited/, \enabled
       @render!
     #TODO support default-filter
 

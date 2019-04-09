@@ -51,9 +51,9 @@ ChooseFont.prototype = import$(Object.create(Object.prototype), {
         disabled = this.disableFilter(f, idx);
         f[this.opt.limitHard ? 'disabled' : 'limited'] = disabled;
         if (f.limited) {
-          f.html = f.html.replace('disabled', 'limited');
+          f.html = f.html.replace(/disabled|enabled/, 'limited');
         } else if (!f.disabled) {
-          f.html = f.html.replace('disabled', '');
+          f.html = f.html.replace(/disabled|limited/, 'enabled');
         }
       }
       return this.render();
