@@ -1,0 +1,149 @@
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    meta(property="og:locale",content="zh_TW")
+    meta(property="og:image",content="http://plotdb.github.io/choosefont.js/thumbnail.png")
+    meta(property="og:image:type",content="image/png")
+    meta(property="og:image:width",content="1200")
+    meta(property="og:image:height",content="630")
+    meta(property="og:title",content="choosefont.js / Javascript Font Picker")
+    meta(property="og:type",content="article")
+    meta(property="og:url",content="http://plotdb.github.io/choosefont.js/")
+    meta(property="og:description",content="choosefont.js is a javascript library that helps you implement the font picker in your webapp.")
+    meta(property="article:author",content="zbryikt")
+    meta(property="article:section",content="Taiwan")
+    meta(name="keywords",content="webfont,font loader,cjk")
+
+    link(rel="stylesheet",type="text/css",href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css")
+    link(rel="stylesheet",type="text/css",href="assets/clusterize.css")
+    link(rel="stylesheet",type="text/css",href="assets/ldcv/ldcv.min.css")
+    link(rel="stylesheet",type="text/css",href="css/index.css")
+    link(rel="stylesheet",type="text/css",href="assets/choosefont.css")
+    script(src="https://code.jquery.com/jquery-3.3.1.slim.min.js")
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js")
+    script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js")
+    script(src="assets/xfl.js")
+    script(src="assets/ldcv/ldcv.min.js")
+    script(src="assets/choosefont.js")
+    script(src="assets/clusterize.min.js")
+  body: #root
+    include ../../static/assets/choosefont.pug
+    .ldcv.default-size: .base: .inner: +choosefont()
+    br
+    h1 choosefont.js
+    hr
+    p choosefont.js is a javascript library that helps you implement the font picker in your webapp. It contains two parts of code:
+    ul
+      li Font Thumbnail Sprite + Metadata Generator 
+      li Font Picker JavaScript Library
+    p It uses #[a(href="https://github.com/plotdb/xl-fontload") XL-FontLoad] to load fonts, which take care of the mechanism of partial loading of large font file made for CJK glyphs.
+    br
+    br
+    h2 Example
+    hr
+    .row
+      .col-sm-3
+        .btn.btn-outline-dark.btn-lg.mb-2.btn-block(onclick="ldcv.toggle();") Choose in Dialog ...
+        .dropdown.mb-2
+          .btn.btn-outline-dark.dropdown-toggle.btn-lg.btn-block(data-toggle="dropdown") Choose via Dropdown
+          #demo-dropdown.dropdown-menu(style="width:100%")
+        label: small Choose from list
+        .card.text-center.border-dark
+          ul#demo-list-group.list-group.list-group-flush(style="height:285px;overflow:scroll")
+      .col-sm-9
+        textarea#demo-textarea.form-control(rows="16").
+          一你光深……在而天心令科地看傷……行人北國目；生問真多策？供反臺係什高一最子體時本客的，策間當樹友，我聽帶習場有利具懷那須好步，多意各現在國很什子樂，然受傳不民住之首在；功小的的己學發到園產觀長人：來直計……愛治爭送對了聲，死色受素的！分但遊字夫。
+
+          耕ネ提定ほ伝公方もラゅド内高ヘ京食こ舞平クめ祝強ツヤホ歩万指トワス命1燥レタヌム千岳犠眠作りぞ。京クーる表姿し治長ぐご接社クナ市細す渡暴キ満依ーだま覧員め開由びゅ検頂条1音スサロ州53詳対ぞラおぴ密囲まつ選微酸災盗ゆク。
+
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+          
+          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        br
+    br
+    br
+    h3 Usage
+    hr
+    p Download and include #[code: a(href="https://plotdb.github.io/choosefont.js/assets/choosefont.css") choosefont.css], #[code: a(href="https://raw.githubusercontent.com/plotdb/xl-fontload/master/frontend/index.js") xl-fontload.js] and #[code: a(href="https://plotdb.github.io/choosefont.js/assets/choosefont.js",target="_blank") choosefont.js] in your html:
+    pre.card.text-secondary.bg-light: .card-body.
+        &lt;link rel="stylesheet" type="text/css" href="choosefont.css"/&gt;
+        &lt;script src="xfl.js"&gt;&lt;/script&gt;
+        &lt;script src="choosefont.js"&gt;&lt;/script&gt;
+    p then, prepare font informations files. This includes a font preview sprites image #[code: a(href="https://plotdb.github.io/choosefont.js/assets/fontinfo/sprite.min.png") sprites.min.png] and font metadata #[code: a(href="http://plotdb.github.io/choosefont.js/assets/fontinfo/meta.json") meta.json] - which could be built with choosefont.js too - and put them in your website.
+    p Next we initialize the fontchooser:
+    pre.card.bg-light.text-secondary: .card-body.
+      var chooser = new ChooseFont({
+        node: &lt;css-selector-for-your-popup-modal&gt;,
+        metaUrl: &lt;path-to-your-meta.json&gt;,
+        base: &lt;root-directory-for-your-fonts&gt;
+      });
+      chooser.init();
+    p choosefont.css uses #[code sprite.min.png] so you also have to patch the css rules to let it know the location you place sprite.min.png. For example, add following CSS rule in your css file:
+    pre.card.bg-light.text-secondary: .card-body.
+      .choosefont .item .img {
+        background-image: url(&lt;path-to-your-sprite-png&gt;/sprite.min.png);
+      }
+    p choosefont will fire #[code choose] event when user picks a font and pass the corresponding font object as parameter. We can load the font within the event handler with xl-fontload:
+    pre.card.bg-light.text-secondary: .card-body.
+      chooser.on("choose", function(font) {
+        font.sync(document.body.innerText, function() {
+          document.body.style.fontFamily = font.name;
+        });
+      });
+    
+    br
+    h3 Styling
+    p Choosefont.js builds a list of font preview for you, while you can customize it by yourself. This includes two options when initializing choosefont:
+    h4 #[code grid]
+    with type #[code grid] choosefont.js will initialize a html layout like following:
+    pre.card.bg-light.fg-secondary: .card-body.
+      &lt;div&gt;
+        &lt;div class="line"&gt;
+          &lt;div class="item"&gt;
+            &lt;div class="inner"&gt;
+              &lt;div class="img"&gt;&lt;/div&gt; &lt;!-- the font preview image --&gt;
+              &lt;span&gt; Some Font Name &lt;/span&gt; &lt;!-- name of this font --&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+          ... &lt;!-- default 4 items per line.could be tweaked by option #[code cols]. --&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+    br
+    h4 #[code list]
+    with type #[code list] choosefont.js will initialize a html layout like following:
+    pre.card.bg-light.fg-secondary: .card-body.
+      &lt;div&gt;
+        &lt;div class="item"&gt;
+          &lt;div class="inner"&gt;
+            &lt;div class="img"&gt;&lt;/div&gt; &lt;!-- the font preview image --&gt;
+            &lt;span&gt; Some Font Name &lt;/span&gt; &lt;!-- name of this font --&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+    br
+    h4 Custom Class Name
+    p You can also add custom class name in the #[code item] div via #[code itemClass] option.
+    br
+    h4 Custom List
+    p You can customize font list by providing two additional config functions:
+    ul
+      li #[code disableFilter(f, idx)] - if return true for certain f/idx, the corresponding font will be disabled ( shown gray )
+      li #[code defaultFilter(f, idx)] - if return false for certain f/idx, the corresponding font won't be shown in the list.
+    p the f object contains following member attributes:
+    ul
+      li #[code name] - font name, string.
+      li #[code family] - font family, array of string.
+      li #[code category] - font category, array of string. 
+    br
+    br
+
+    h3 License
+    hr
+    p All source codes releasd by #[a(href="https://twitter.com/zbryikt") @zbryikt] under MIT License. check #[a(href="https://github.com/plotdb/choosefont.js") Github Repo] for more information.
+    br
+    br
+    br
+  script(src="js/index.js")

@@ -1,0 +1,12 @@
+//- module
+mixin choosefont
+  .choosefont.toolbar
+    .choosefont-head.form-inline
+      .dropdown
+        .btn.btn-outline-secondary.dropdown-toggle.mr-2(data-toggle="dropdown",data-category-holder="true") Family ...
+        .dropdown-menu
+          each name in ["All", "Serif", "Sans Serif", "Display", "Handwriting", "Monospace", "Chinese"]
+            a.dropdown-item(href="#",data-category=name) #{name}
+      input.form-control
+    .choosefont-content
+    block

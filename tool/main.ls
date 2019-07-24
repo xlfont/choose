@@ -144,7 +144,8 @@ process-fonts [v for k,v of fonthash]
     console.log "   write meta data...".cyan
     fs.write-file-sync \assets/meta.json, JSON.stringify(meta)
     console.log "   convert sprite svg to png...".cyan
-    svg2png new Buffer(svg)
+    #svg2png new Buffer(svg)
+    svg2png Buffer.from(svg)
   .then (buf) ->
     new Promise (res, rej) ->
       fs.write-file-sync \assets/sprite.png, buf

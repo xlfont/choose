@@ -1,6 +1,7 @@
 ChooseFont = (opt = {}) ->
   @ <<< opt{root, meta-url, type, wrapper, itemClass, cols, base, disable-filter, default-filter}
   @opt = opt
+  if !@disable-filter => @disable-filter = -> false
   @root = if typeof(@root) == \string => document.querySelector(@root) else @root
   @root.classList.add \choosefont
   @node = @root.querySelector '.choosefont-content'

@@ -39,6 +39,13 @@ Configurations:
  * type: type of chooser. either 'grid' or 'list'. default 'grid'.
  * itemClass: add additional classes to font list item. should be space separated string.
  * cols: how many item per line ( for grid view ). default 4.
+ * disable-filter(f, idx) - if you want to disable some font, return true when f / idx matches the font.
+   - f object:
+     category: [ ... ] # e.g., HANDWRITING
+     family: [...] # e.g., Regular
+     name: "fontName"
+ * default-filter(f, idx) - if you want to disable some font, return true when f / idx matches the font.
+   - same f object as disable-filter.
 
 Once created, you can interact with chooser programmatically with following methods:
 

@@ -12,6 +12,11 @@ ChooseFont = function(opt){
   this.disableFilter = opt.disableFilter;
   this.defaultFilter = opt.defaultFilter;
   this.opt = opt;
+  if (!this.disableFilter) {
+    this.disableFilter = function(){
+      return false;
+    };
+  }
   this.root = typeof this.root === 'string'
     ? document.querySelector(this.root)
     : this.root;

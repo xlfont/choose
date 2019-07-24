@@ -14,8 +14,7 @@ echo "copy assets to dist/... "
 mkdir -p dist/fontinfo
 cp tool/assets/* dist/fontinfo/
 echo "copy files to web/... "
-mkdir -p web/assets/
-mkdir -p web/assets/fontinfo
-cp -R dist/* web/assets/
-cp tool/assets/* web/assets/fontinfo/
+mkdir -p web/static/assets/fontinfo
+cp -R dist/* web/static/assets/
+cp tool/assets/* web/static/assets/fontinfo/
 echo "done."
