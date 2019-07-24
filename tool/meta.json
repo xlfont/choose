@@ -55,5 +55,7 @@
   "fonts/chinese/王漢宗/王漢宗超黑俏皮動物.ttf": ["DISPLAY", "CHINESE"],
   "fonts/chinese/王漢宗/王漢宗酷儷海報.ttf": ["DISPLAY", "CHINESE"],
   "fonts/chinese/王漢宗/王漢宗鋼筆行楷.ttf": ["HANDWRITING", "CHINESE"],
-  "fonts/chinese/王漢宗/王漢宗顏體.ttf": ["SERIF", "CHINESE"]
+  "fonts/chinese/王漢宗/王漢宗顏體.ttf": ["SERIF", "CHINESE"],
+  "fonts/chinese/清松手寫/清松手寫體1.ttf": ["HANDWRITING", "CHINESE"],
+  "fonts/chinese/清松手寫/清松手寫體2.ttf": ["HANDWRITING", "CHINESE"]
 }
