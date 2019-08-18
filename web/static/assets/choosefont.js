@@ -2,6 +2,9 @@
 var ChooseFont;
 ChooseFont = function(opt){
   opt == null && (opt = {});
+  if (!(typeof xfl != 'undefined' && xfl !== null)) {
+    console.warn("xfl not found - choosefont.js needs xfl for certain action to work.");
+  }
   this.root = opt.root;
   this.metaUrl = opt.metaUrl;
   this.type = opt.type;

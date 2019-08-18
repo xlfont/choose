@@ -1,4 +1,6 @@
+
 ChooseFont = (opt = {}) ->
+  if !(xfl?) => console.warn("xfl not found - choosefont.js needs xfl for certain action to work.")
   @ <<< opt{root, meta-url, type, wrapper, itemClass, cols, base, disable-filter, default-filter}
   @opt = opt
   if !@disable-filter => @disable-filter = -> false

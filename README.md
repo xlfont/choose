@@ -23,7 +23,9 @@ Resource packer and widget for super fast in-browser font picking experience.
 
 ## Use Choosefont.js
 
-make a font chooser with following:
+xfl.js is required. include it at first.
+
+then make a font chooser with following:
 
 ```
     var chooser = new ChooseFont(config);
