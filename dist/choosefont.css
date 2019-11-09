@@ -30,7 +30,7 @@
   background: #fafbfc;
 }
 .choosefont .item.limited:hover:before {
-  content: "\e90b";
+  content: "\f011";
   font-family: ldi;
   display: block;
   position: absolute;
