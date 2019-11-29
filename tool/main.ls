@@ -52,7 +52,9 @@ process-font = (font) -> new Promise (res, rej) ->
     family = ([{style: null, path: font.path}] ++ [{style: k,path: v} for k,v of font.family]).filter(->it.path)
     for member in family =>
       tts = text-to-svg.load-sync member.path
-      d = tts.getD if (!member.style or member.style == \Regular) => font.name else "#{font.name} #{member.style}"
+      if metamap[member.path] and metamap[member.path].sample => text = metamap[member.path].sample
+      else text = font.name
+      d = tts.getD if (!member.style or member.style == \Regular) => text else "#{text} #{member.style}"
       if !d or is-rect(d) => continue
       member.d = d
       member.box = path-bounds(d)
@@ -64,11 +66,12 @@ process-font = (font) -> new Promise (res, rej) ->
       else if !(font.render-sample.box.width and font.render-sample.box.height) => delete font.render-sample
     if font.render-sample =>
       metadata = "#{path.dirname(font.render-sample.path)}/METADATA.pb"
+      meta = metamap[font.render-sample.path]
       if fs.exists-sync metadata =>
         ret = /category: "([^"]+)"/.exec(fs.read-file-sync metadata .toString!)
         if ret => font.category = [ret.1]
-      else if metamap[font.render-sample.path] =>
-        font.category = that
+      else if meta =>
+        font.category = if meta.category => that else meta
         if !Array.isArray(font.category) => font.category = [font.category]
     return res!
   catch e
