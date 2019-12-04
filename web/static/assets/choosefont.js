@@ -168,7 +168,7 @@ ChooseFont.prototype = import$(Object.create(Object.prototype), {
       } else {
         variant = !font.family.length
           ? ""
-          : "-" + (font.family.indexOf('Regular')
+          : "-" + (~font.family.indexOf('Regular')
             ? 'Regular'
             : font.family[0]);
         path = this$.base + "/" + font.name + variant + (font.isSet ? '/' : '.ttf');

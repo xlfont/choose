@@ -113,7 +113,7 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
       @fonts.hash{}[name][opt.variant or \Regular] = font
     else
       variant = if !font.family.length => ""
-      else "-" + (if font.family.indexOf(\Regular) => \Regular else font.family.0)
+      else "-" + (if ~font.family.indexOf(\Regular) => \Regular else font.family.0)
       path = "#{@base}/#{font.name}#variant#{if font.isSet => '/' else '.ttf'}"
     if xfl? =>
       @fire \loading.font, font
