@@ -1,4 +1,6 @@
 {
+  "fonts/google-fonts/lohitbengali/Lohit-Bengali.ttf": {"sample": "বাংলা ", "category": ["BENGALI"] },
+  "fonts/google-fonts/lohittamil/Lohit-Tamil.ttf": {"sample": "தமிழ்", "category": ["TAMIL"] },
   "fonts/chinese/851手書き雑フォント/851手書き雑フォント.ttf": ["HANDWRITING", "CHINESE"],
   "fonts/chinese/刻石錄/刻石錄明體.ttf": ["SERIF", "CHINESE"],
   "fonts/chinese/刻石錄/刻石錄鋼筆鶴體.ttf": ["HANDWRITING", "CHINESE"],
