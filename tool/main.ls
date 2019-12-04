@@ -2,6 +2,7 @@ require! <[fs fs-extra path text-to-svg svg-path-bounds sharp pngquant progress 
 
 dim = {width: 400, height: 50, col: 5, padding: 10}
 fontset-dir = "fontset"
+scale-multiplier = 1.75
 
 variants = <[Italic Regular Bold ExtraBold Medium SemiBold ExtraLight Light Thin Black BlackItalic BoldItalic ExtraBoldItalic MediumItalic LightItalic ThinItalic SemiBoldItalic ExtraLightItalic DemiBold Heavy UltraLight]>
 
@@ -105,7 +106,7 @@ process-fonts [v for k,v of fonthash]
     console.log "   composite sprite svg file...".cyan
     if !fontlist.length => return
     paths = []
-    scale = Math.min.apply null, fontlist.map(->
+    scale = scale-multiplier * Math.min.apply null, fontlist.map(->
       Math.min(
         dim.width / (dim.padding * 2 + it.render-sample.box.width),
         dim.height / (dim.padding * 2 + it.render-sample.box.height)
