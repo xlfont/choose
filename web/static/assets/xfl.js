@@ -6,7 +6,7 @@ xfl = {
     return (code >= 0xff00 && code <= 0xffef) || (code >= 0x4e00 && code <= 0x9fff);
   },
   load: function(path, options, callback){
-    var ref$, cb, ext, name, slug, font, format, xhr, this$ = this;
+    var ref$, cb, ext, name, slug, font, that, format, xhr, this$ = this;
     options == null && (options = {});
     if (!path) {
       return;
@@ -28,7 +28,10 @@ xfl = {
       codeToSet: {},
       hit: {},
       url: {},
-      ext: ext && ~['woff2', 'woff', 'eot', 'ttf', 'otf'].indexOf(ext) ? ext : null
+      ext: ext && ~['woff2', 'woff', 'eot', 'ttf', 'otf'].indexOf(ext)
+        ? ext
+        : (that = options.ext) ? that : null,
+      fromBlob: !!/^blob:/.exec(path)
     };
     font.ajax = function(idxlist, cb){
       var check, this$ = this;
@@ -132,7 +135,7 @@ xfl = {
       if (cb) {
         return cb(font);
       }
-    } else {
+    } else if (font.fromBlob) {} else {
       xhr = new XMLHttpRequest();
       xhr.addEventListener('readystatechange', function(){
         var hash;

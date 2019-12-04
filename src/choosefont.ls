@@ -8,11 +8,30 @@ ChooseFont = (opt = {}) ->
   @root.classList.add \choosefont
   @node = @root.querySelector '.choosefont-content'
   @input = @root.querySelector('input')
+  @upload = @root.querySelector('[data-action=upload]')
   if !@cols => @cols = 4
   if !@node =>
     @node = document.createElement("div")
     @node.classList.add \choosefont-content
     @root.appendChild @node
+  if @upload =>
+    if !(ldFile?) =>
+      console.warn("ldFile not found - you specified upload button, but we need ldFile to suppot upload feature.")
+      @upload.classList.add \d-none
+    else
+      @ldf = new ldFile root: @upload.querySelector('input', 0), type: \bloburl
+      @ldf.on \load, ~>
+        filename = @ldf.root.files.0.name.replace(/\..*$/,'')
+        ret = filename.split(\-)
+        [name,variant] = if ret[* - 1] in ChooseFont.variants =>
+          [ret.slice(0, ret.length - 1).join('-'), ret[* - 1]]
+        else [ret.join('-'), null]
+        @load do
+          name: "#{name}-#{variant or 'Regular'}"
+          variant: variant
+          path: it.0
+          ext: (/\.([0-9a-zA-Z]*)$/.exec(@ldf.root.files.0.name) or []).1 or 'ttf'
+
   @root.querySelector '.btn-group'
   @filter.value = {name: '', category: ''}
   return @
@@ -69,21 +88,37 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
     names
       .map ->
         ret = it.split(\-)
-        [name,family] = if ret[* - 1] in ChooseFont.variants =>
+        [name,variant] = if ret[* - 1] in ChooseFont.variants =>
           [ret.slice(0, ret.length - 1).join('-'), ret[* - 1]]
         else [ret.join('-'), null]
-        return [name, family]
+        return [name, variant]
       .map ~> [@fonts.hash[it.0], it.1]
       .filter -> it.0
+      .map ~> [(it.0[it.1] or it.0.Regular or it.0), it.1]
 
   load: (font) -> new Promise (res, rej) ~>
-    family = if !font.family.length => ""
-    else "-" + (if font.family.indexOf(\Regular) => \Regular else font.family.0)
-    path = "#{@base}/#{font.name}#family#{if font.isSet => '/' else '.ttf'}"
+    opt = {}
+    # this is for custom font ( via Upload or URL. )
+    # font object is resolved before load ( TODO or move resolving here and support string/path as parameter? )
+    if font.path =>
+      # xfl resolve info via path, but there is no rule guaranteed in upload/link path
+      # so we pre-resolve it here - this could be supported by a popup widget in the future, if necessary.
+      opt <<< font{ext, name, variant}
+      path = font.path
+      # internally we group fonts by their no-variant name ( as a family )
+      # so we here have to use it.
+      name = if ~font.name.indexOf('-') => font.name.split('-')[0] else font.name
+      # hash contains font objects yet future we should support multiple fonts with different variants.
+      # like this:
+      @fonts.hash{}[name][opt.variant or \Regular] = font
+    else
+      variant = if !font.family.length => ""
+      else "-" + (if font.family.indexOf(\Regular) => \Regular else font.family.0)
+      path = "#{@base}/#{font.name}#variant#{if font.isSet => '/' else '.ttf'}"
     if xfl? =>
       @fire \loading.font, font
       # give it a little break so caller might be able to handle 'loading.font' better
-      setTimeout (~> xfl.load path, (~>
+      setTimeout (~> xfl.load path, opt, (~>
         if font.limited => it.limited = true
         @fire(\choose, it, {limited: font.limited}); res it
       )), 10
