@@ -46,15 +46,15 @@ ChooseFont = function(opt){
         type: 'bloburl'
       });
       this.ldf.on('load', function(it){
-        var filename, ret, ref$, name, family;
+        var filename, ret, ref$, name, variant;
         filename = this$.ldf.root.files[0].name.replace(/\..*$/, '');
         ret = filename.split('-');
         ref$ = in$(ret[ret.length - 1], ChooseFont.variants)
           ? [ret.slice(0, ret.length - 1).join('-'), ret[ret.length - 1]]
-          : [ret.join('-'), null], name = ref$[0], family = ref$[1];
+          : [ret.join('-'), null], name = ref$[0], variant = ref$[1];
         return this$.load({
-          name: name + "-" + (family || 'Regular'),
-          family: family,
+          name: name + "-" + (variant || 'Regular'),
+          variant: variant,
           path: it[0],
           ext: (/\.([0-9a-zA-Z]*)$/.exec(this$.ldf.root.files[0].name) || [])[1] || 'ttf'
         });
@@ -137,41 +137,41 @@ ChooseFont.prototype = import$(Object.create(Object.prototype), {
     var this$ = this;
     names == null && (names = []);
     return names.map(function(it){
-      var ret, ref$, name, family;
+      var ret, ref$, name, variant;
       ret = it.split('-');
       ref$ = in$(ret[ret.length - 1], ChooseFont.variants)
         ? [ret.slice(0, ret.length - 1).join('-'), ret[ret.length - 1]]
-        : [ret.join('-'), null], name = ref$[0], family = ref$[1];
-      return [name, family];
+        : [ret.join('-'), null], name = ref$[0], variant = ref$[1];
+      return [name, variant];
     }).map(function(it){
       return [this$.fonts.hash[it[0]], it[1]];
     }).filter(function(it){
       return it[0];
     }).map(function(it){
-      return [it[0][it[1]] || it[0].Default || it[0], it[1]];
+      return [it[0][it[1]] || it[0].Regular || it[0], it[1]];
     });
   },
   load: function(font){
     var this$ = this;
     return new Promise(function(res, rej){
-      var opt, ref$, family, path, name;
+      var opt, path, name, ref$, variant;
       opt = {};
-      if (typeof font === 'string') {
-        ref$ = ["", font], family = ref$[0], path = ref$[1];
-        font = {};
-      } else if (font.path) {
-        ref$ = [font.ext, font.name, font.path, font.family], opt.ext = ref$[0], opt.fontName = ref$[1], path = ref$[2], opt.family = ref$[3];
+      if (font.path) {
+        opt.ext = font.ext;
+        opt.name = font.name;
+        opt.variant = font.variant;
+        path = font.path;
         name = ~font.name.indexOf('-')
           ? font.name.split('-')[0]
           : font.name;
-        ((ref$ = this$.fonts.hash)[name] || (ref$[name] = {}))[opt.family || 'Regular'] = font;
+        ((ref$ = this$.fonts.hash)[name] || (ref$[name] = {}))[opt.variant || 'Regular'] = font;
       } else {
-        family = !font.family.length
+        variant = !font.family.length
           ? ""
           : "-" + (font.family.indexOf('Regular')
             ? 'Regular'
             : font.family[0]);
-        path = this$.base + "/" + font.name + family + (font.isSet ? '/' : '.ttf');
+        path = this$.base + "/" + font.name + variant + (font.isSet ? '/' : '.ttf');
       }
       if (typeof xfl != 'undefined' && xfl !== null) {
         this$.fire('loading.font', font);
