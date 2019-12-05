@@ -14,23 +14,20 @@ ChooseFont = (opt = {}) ->
     @node = document.createElement("div")
     @node.classList.add \choosefont-content
     @root.appendChild @node
-  if @upload =>
-    if !(ldFile?) =>
-      console.warn("ldFile not found - you specified upload button, but we need ldFile to suppot upload feature.")
-      @upload.classList.add \d-none
-    else
-      @ldf = new ldFile root: @upload.querySelector('input', 0), type: \bloburl
-      @ldf.on \load, ~>
-        filename = @ldf.root.files.0.name.replace(/\..*$/,'')
-        ret = filename.split(\-)
-        [name,variant] = if ret[* - 1] in ChooseFont.variants =>
-          [ret.slice(0, ret.length - 1).join('-'), ret[* - 1]]
-        else [ret.join('-'), null]
-        @load do
-          name: "#{name}-#{variant or 'Regular'}"
-          variant: variant
-          path: it.0
-          ext: (/\.([0-9a-zA-Z]*)$/.exec(@ldf.root.files.0.name) or []).1 or 'ttf'
+  if @upload and ldFile? =>
+    @ldf = new ldFile root: @upload.querySelector('input', 0), type: \bloburl
+    @ldf.on \load, ~>
+      filename = @ldf.root.files.0.name.replace(/\..*$/,'')
+      ret = filename.split(\-)
+      [name,variant] = if ret[* - 1] in ChooseFont.variants =>
+        [ret.slice(0, ret.length - 1).join('-'), ret[* - 1]]
+      else [ret.join('-'), null]
+      @load do
+        name: "#{name}-#{variant or 'Regular'}"
+        variant: variant
+        limited: !!@opt.limit-upload
+        path: it.0
+        ext: (/\.([0-9a-zA-Z]*)$/.exec(@ldf.root.files.0.name) or []).1 or 'ttf'
 
   @root.querySelector '.btn-group'
   @filter.value = {name: '', category: ''}
@@ -39,6 +36,14 @@ ChooseFont = (opt = {}) ->
 ChooseFont.variants = <[Italic Regular Bold ExtraBold Medium SemiBold ExtraLight Light Thin Black BlackItalic BoldItalic ExtraBoldItalic MediumItalic LightItalic ThinItalic SemiBoldItalic ExtraLightItalic DemiBold Heavy UltraLight]>
 
 ChooseFont.prototype = Object.create(Object.prototype) <<< do
+  set-config: (opt) ->
+    if opt.disable-filter => @disable-filter = that
+    if opt.default-filter => @default-filter = that
+    @opt <<< opt
+    @upload.classList.toggle \d-none, !(@opt.enable-upload and (ldFile?))
+    @upload.classList.toggle \limited, @opt.limit-upload
+    if @opt.enable-upload and !(ldFile?) => console.warn("ldFile not found - upload function need ldFile to work.")
+
   apply-filters: (o) ->
     if o? => <[disableFilter defaultFilter]>.map ~> if o[it] => @[it] = o[it]
     if @disable-filter and @meta =>

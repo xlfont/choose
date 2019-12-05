@@ -36,30 +36,26 @@ ChooseFont = function(opt){
     this.node.classList.add('choosefont-content');
     this.root.appendChild(this.node);
   }
-  if (this.upload) {
-    if (!(typeof ldFile != 'undefined' && ldFile !== null)) {
-      console.warn("ldFile not found - you specified upload button, but we need ldFile to suppot upload feature.");
-      this.upload.classList.add('d-none');
-    } else {
-      this.ldf = new ldFile({
-        root: this.upload.querySelector('input', 0),
-        type: 'bloburl'
+  if (this.upload && (typeof ldFile != 'undefined' && ldFile !== null)) {
+    this.ldf = new ldFile({
+      root: this.upload.querySelector('input', 0),
+      type: 'bloburl'
+    });
+    this.ldf.on('load', function(it){
+      var filename, ret, ref$, name, variant;
+      filename = this$.ldf.root.files[0].name.replace(/\..*$/, '');
+      ret = filename.split('-');
+      ref$ = in$(ret[ret.length - 1], ChooseFont.variants)
+        ? [ret.slice(0, ret.length - 1).join('-'), ret[ret.length - 1]]
+        : [ret.join('-'), null], name = ref$[0], variant = ref$[1];
+      return this$.load({
+        name: name + "-" + (variant || 'Regular'),
+        variant: variant,
+        limited: !!this$.opt.limitUpload,
+        path: it[0],
+        ext: (/\.([0-9a-zA-Z]*)$/.exec(this$.ldf.root.files[0].name) || [])[1] || 'ttf'
       });
-      this.ldf.on('load', function(it){
-        var filename, ret, ref$, name, variant;
-        filename = this$.ldf.root.files[0].name.replace(/\..*$/, '');
-        ret = filename.split('-');
-        ref$ = in$(ret[ret.length - 1], ChooseFont.variants)
-          ? [ret.slice(0, ret.length - 1).join('-'), ret[ret.length - 1]]
-          : [ret.join('-'), null], name = ref$[0], variant = ref$[1];
-        return this$.load({
-          name: name + "-" + (variant || 'Regular'),
-          variant: variant,
-          path: it[0],
-          ext: (/\.([0-9a-zA-Z]*)$/.exec(this$.ldf.root.files[0].name) || [])[1] || 'ttf'
-        });
-      });
-    }
+    });
   }
   this.root.querySelector('.btn-group');
   this.filter.value = {
@@ -70,6 +66,21 @@ ChooseFont = function(opt){
 };
 ChooseFont.variants = ['Italic', 'Regular', 'Bold', 'ExtraBold', 'Medium', 'SemiBold', 'ExtraLight', 'Light', 'Thin', 'Black', 'BlackItalic', 'BoldItalic', 'ExtraBoldItalic', 'MediumItalic', 'LightItalic', 'ThinItalic', 'SemiBoldItalic', 'ExtraLightItalic', 'DemiBold', 'Heavy', 'UltraLight'];
 ChooseFont.prototype = import$(Object.create(Object.prototype), {
+  setConfig: function(opt){
+    var that;
+    if (that = opt.disableFilter) {
+      this.disableFilter = that;
+    }
+    if (that = opt.defaultFilter) {
+      this.defaultFilter = that;
+    }
+    import$(this.opt, opt);
+    this.upload.classList.toggle('d-none', !(this.opt.enableUpload && (typeof ldFile != 'undefined' && ldFile !== null)));
+    this.upload.classList.toggle('limited', this.opt.limitUpload);
+    if (this.opt.enableUpload && !(typeof ldFile != 'undefined' && ldFile !== null)) {
+      return console.warn("ldFile not found - upload function need ldFile to work.");
+    }
+  },
   applyFilters: function(o){
     var i$, to$, idx, f, disabled, this$ = this;
     if (o != null) {

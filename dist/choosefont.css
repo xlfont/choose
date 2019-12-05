@@ -26,6 +26,12 @@
   right: 0;
   z-index: 1;
 }
+.choosefont .btn i.i-lock {
+  display: none;
+}
+.choosefont .btn.limited i.i-lock {
+  display: inline-block;
+}
 .choosefont .item.limited {
   background: #fafbfc;
 }
