@@ -26,7 +26,7 @@ ChooseFont = (opt = {}) ->
         name: "#{name}-#{variant or 'Regular'}"
         variant: variant
         limited: !!@opt.limit-upload
-        path: it.0
+        path: it.0.result
         ext: (/\.([0-9a-zA-Z]*)$/.exec(@ldf.root.files.0.name) or []).1 or 'ttf'
 
   @root.querySelector '.btn-group'

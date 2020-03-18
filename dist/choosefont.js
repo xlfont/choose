@@ -48,11 +48,12 @@ ChooseFont = function(opt){
       ref$ = in$(ret[ret.length - 1], ChooseFont.variants)
         ? [ret.slice(0, ret.length - 1).join('-'), ret[ret.length - 1]]
         : [ret.join('-'), null], name = ref$[0], variant = ref$[1];
+      console.log(1);
       return this$.load({
         name: name + "-" + (variant || 'Regular'),
         variant: variant,
         limited: !!this$.opt.limitUpload,
-        path: it[0],
+        path: it[0].result,
         ext: (/\.([0-9a-zA-Z]*)$/.exec(this$.ldf.root.files[0].name) || [])[1] || 'ttf'
       });
     });
@@ -166,6 +167,7 @@ ChooseFont.prototype = import$(Object.create(Object.prototype), {
     var this$ = this;
     return new Promise(function(res, rej){
       var opt, path, name, ref$, variant;
+      console.log(2, font);
       opt = {};
       if (font.path) {
         opt.ext = font.ext;
