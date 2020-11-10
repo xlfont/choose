@@ -3,3 +3,4 @@ fontset
 node_modules
 .*.swp
 _public
+web/.view
