@@ -1,0 +1,9 @@
+tool
+web
+node_modules
+build
+dist/fontinfo/sprite.svg
+.*.swp
+.swp
+*.log
+secret.*
