@@ -29,6 +29,7 @@ then make a font chooser with following:
 
 ```
     var chooser = new ChooseFont(config);
+    chooser.init();
 ```
 
 Configurations:
