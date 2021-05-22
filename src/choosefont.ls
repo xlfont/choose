@@ -91,7 +91,7 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
 
   find: (names = []) ->
     names
-      .map ->
+      .map ~>
         ret = it.split(\-)
         [name,variant] = if ret[* - 1] in ChooseFont.variants =>
           [ret.slice(0, ret.length - 1).join('-'), ret[* - 1]]
@@ -112,7 +112,11 @@ ChooseFont.prototype = Object.create(Object.prototype) <<< do
       path = font.path
       # internally we group fonts by their no-variant name ( as a family )
       # so we here have to use it.
-      name = if ~font.name.indexOf('-') => font.name.split('-')[0] else font.name
+      name = font.name
+      if ~font.name.indexOf('-') =>
+        list = font.name.split \-
+        if list.length > 1 and list[* - 1] in ChooseFont.variants =>
+          name = list.splice(0, list.length - 1).join('-')
       # hash contains font objects yet future we should support multiple fonts with different variants.
       # like this:
       @fonts.hash{}[name][opt.variant or \Regular] = font
