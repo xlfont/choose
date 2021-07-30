@@ -1,0 +1,97 @@
+.xfc {
+  width: 100%;
+  height: 100%;
+}
+.xfc .line > .inner {
+  display: flex;
+  flex-wrap: nowrap;
+}
+.xfc .item {
+  flex: 1 1 auto;
+  text-align: center;
+  position: relative;
+  width: 400px;
+  height: 80px;
+  margin: 15px;
+  overflow: hidden;
+}
+.xfc .item:after {
+  content: " ";
+  position: absolute;
+  display: block;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 1;
+}
+.xfc .btn i.i-lock {
+  display: none;
+}
+.xfc .btn.limited i.i-lock {
+  display: inline-block;
+}
+.xfc .item.limited {
+  background: #fafbfc;
+}
+.xfc .item.limited:hover:before {
+  content: "\f011";
+  font-family: ldi;
+  display: block;
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
+  z-index: 2;
+  opacity: 0.5;
+}
+.xfc .item.disabled {
+  opacity: 0.3;
+  background: rgba(0,0,0,0.1);
+}
+.xfc .item .img {
+  background-repeat: no-repeat;
+  background-image: url("fontinfo/sprite.min.png") /* user must update this path */;
+  width: 400px;
+  height: 50px;
+  position: absolute;
+  left: -200px;
+  right: -200px;
+  margin: auto;
+}
+.xfc .item span {
+  font-size: 0.6em;
+  opacity: 0.5;
+  position: absolute;
+  width: 100%;
+  left: 0;
+  text-align: center;
+  bottom: 10px;
+}
+.xfc .xfc-head {
+  position: absolute;
+  padding: 20px;
+  border-bottom: 1px solid #ccc;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+  background: #fff;
+  text-align: center;
+}
+.xfc input {
+  outline: none;
+}
+.xfc .xfc-content {
+  max-height: initial;
+  height: 100%;
+  width: 100%;
+  overflow: scroll;
+}
+.xfc.toolbar .xfc-content {
+  padding-top: 87px;
+}
+.xfc .clusterize-no-data {
+  text-align: center;
+  padding: 20px;
+}

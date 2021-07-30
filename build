@@ -1,20 +1,19 @@
 #!/usr/bin/env bash
+rm -rf dist
 mkdir -p dist
-echo "build src/choosefont.ls -> dist/choosefont.js ..."
-npx lsc -cbp src/choosefont.ls > dist/choosefont.js
-echo "build src/choosefont.styl -> dist/choosefont.css ..."
-npx stylus -p src/choosefont.styl > dist/choosefont.css
-echo "minifying choosefont.js ..."
-npx uglifyjs dist/choosefont.js > dist/choosefont.min.js
-echo "minifying choosefont.css ..."
-npx uglifycss dist/choosefont.css > dist/choosefont.min.css
-echo "Copy src/choosefont.pug to dist/choosefont.pug..."
-cp src/choosefont.pug dist/choosefont.pug
+echo "build src/index.ls -> dist/index.js ..."
+npx lsc -cp --no-header src/index.ls > dist/index.js
+echo "build src/index.styl -> dist/index.css ..."
+npx stylus -p src/index.styl > dist/index.css
+echo "minifying index.js ..."
+npx uglifyjs dist/index.js > dist/index.min.js
+echo "minifying index.css ..."
+npx uglifycss dist/index.css > dist/index.min.css
+echo "Copy src/index.pug to dist/index.pug..."
+cp src/index.pug dist/index.pug
 echo "copy assets to dist/... "
-mkdir -p dist/fontinfo
-cp tool/assets/* dist/fontinfo/
 echo "copy files to web/... "
-mkdir -p web/static/assets/fontinfo
-cp -R dist/* web/static/assets/
-cp tool/assets/* web/static/assets/fontinfo/
+rm -rf web/static/assets/lib/@xlfont/choose/
+mkdir -p web/static/assets/lib/@xlfont/choose/dev
+cp -R dist/* web/static/assets/lib/@xlfont/choose/dev
 echo "done."

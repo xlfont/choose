@@ -1,45 +1,40 @@
 doctype html
 html
+  include @/bootstrap.ldui/dist/index.pug
   head
     meta(charset="utf-8")
     meta(property="og:locale",content="zh_TW")
-    meta(property="og:image",content="http://plotdb.github.io/choosefont.js/thumbnail.png")
+    meta(property="og:image",content="http://xlfont.github.io/choose/thumbnail.png")
     meta(property="og:image:type",content="image/png")
     meta(property="og:image:width",content="1200")
     meta(property="og:image:height",content="630")
-    meta(property="og:title",content="choosefont.js / Javascript Font Picker")
+    meta(property="og:title",content="@xlfont/choose / Javascript Font Picker")
     meta(property="og:type",content="article")
-    meta(property="og:url",content="http://plotdb.github.io/choosefont.js/")
-    meta(property="og:description",content="choosefont.js is a javascript library that helps you implement the font picker in your webapp.")
+    meta(property="og:url",content="http://xlfont.github.io/choose/")
+    meta(property="og:description",content="@xlfont/choose is a javascript library that helps you implement the font picker in your webapp.")
     meta(property="article:author",content="zbryikt")
     meta(property="article:section",content="Taiwan")
     meta(name="keywords",content="webfont,font loader,cjk")
 
-    link(rel="stylesheet",type="text/css",href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css")
-    link(rel="stylesheet",type="text/css",href="assets/ldui/ldui.min.css")
-    link(rel="stylesheet",type="text/css",href="assets/clusterize.css")
-    link(rel="stylesheet",type="text/css",href="assets/ldcv/ldcv.min.css")
-    link(rel="stylesheet",type="text/css",href="css/index.css")
-    link(rel="stylesheet",type="text/css",href="assets/choosefont.css")
-    script(src="https://code.jquery.com/jquery-3.3.1.slim.min.js")
-    script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js")
-    script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js")
-    script(src="assets/xfl.js")
-    script(src="assets/ldf.js")
-    script(src="assets/ldcv/ldcv.min.js")
-    script(src="assets/choosefont.js")
-    script(src="assets/clusterize.min.js")
+    +css("assets/lib/bootstrap/main/css/bootstrap.min.css")
+    +css("assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.css")
+    +css("assets/lib/ldcover/main/ldcv.min.css")
+    +css("assets/lib/clusterize.js/main/clusterize.min.css")
+    +css("css/index.css")
+    +css("assets/lib/@xlfont/choose/dev/index.css")
+
+
   body: #root
-    include ../../static/assets/choosefont.pug
-    .ldcv.default-size: .base: .inner: +choosefont()
+    include @static/assets/lib/@xlfont/choose/dev/index.pug
+    .ldcv.default-size: .base: .inner: +xfc()
     br
-    h1 choosefont.js
+    h1 @xlfont/choose
     hr
-    p choosefont.js is a javascript library that helps you implement the font picker in your webapp. It contains two parts of code:
+    p #[b @xlfont/choose] is a javascript library that helps you implement the font picker in your webapp. It contains two parts of code:
     ul
       li Font Thumbnail Sprite + Metadata Generator 
       li Font Picker JavaScript Library
-    p It uses #[a(href="https://github.com/plotdb/xl-fontload") XL-FontLoad] to load fonts, which take care of the mechanism of partial loading of large font file made for CJK glyphs.
+    p It uses #[a(href="https://github.com/xlfont/load") @xlfont/load] to load fonts, which take care of the mechanism of partial loading of large font file made for CJK glyphs.
     br
     br
     h2 Example
@@ -67,12 +62,12 @@ html
     br
     h3 Usage
     hr
-    p Download and include #[code: a(href="https://plotdb.github.io/choosefont.js/assets/choosefont.css") choosefont.css], #[code: a(href="https://raw.githubusercontent.com/plotdb/xl-fontload/master/frontend/index.js") xl-fontload.js] and #[code: a(href="https://plotdb.github.io/choosefont.js/assets/choosefont.js",target="_blank") choosefont.js] in your html:
+    p Download and include #[code: a(href="https://xlfont.github.io/choose/assets/choosefont.css") index.css], #[code: a(href="https://raw.githubusercontent.com/xlfont/load/master/dist/index.js") xfl.js] and #[code: a(href="https://xlfont.github.io/choose/assets/lib/@xlfont/choose/dev/index.js",target="_blank") index.js] in your html:
     pre.card.text-secondary.bg-light: .card-body.
-        &lt;link rel="stylesheet" type="text/css" href="choosefont.css"/&gt;
+        &lt;link rel="stylesheet" type="text/css" href="index.css"/&gt;
         &lt;script src="xfl.js"&gt;&lt;/script&gt;
-        &lt;script src="choosefont.js"&gt;&lt;/script&gt;
-    p then, prepare font informations files. This includes a font preview sprites image #[code: a(href="https://plotdb.github.io/choosefont.js/assets/fontinfo/sprite.min.png") sprites.min.png] and font metadata #[code: a(href="http://plotdb.github.io/choosefont.js/assets/fontinfo/meta.json") meta.json] - which could be built with choosefont.js too - and put them in your website.
+        &lt;script src="index.js"&gt;&lt;/script&gt;
+    p then, prepare font informations files. This includes a font preview sprites image #[code: a(href="https://xlfont.github.io/choose/assets/lib/@xlfont/choose/dev/meta/sprite.min.png") sprites.min.png] and font metadata #[code: a(href="http://xlfont.github.io/choose/assets/lib/@xlfont/choose/meta/meta.json") meta.json] - which could be built with #[b @xlfont/choose] too - and put them in your website.
     p Next we initialize the fontchooser:
     pre.card.bg-light.text-secondary: .card-body.
       var chooser = new ChooseFont({
@@ -98,7 +93,7 @@ html
     h3 Styling
     p Choosefont.js builds a list of font preview for you, while you can customize it by yourself. This includes two options when initializing choosefont:
     h4 #[code grid]
-    with type #[code grid] choosefont.js will initialize a html layout like following:
+    with type #[code grid] #[b @xlfont/choose] will initialize a html layout like following:
     pre.card.bg-light.fg-secondary: .card-body.
       &lt;div&gt;
         &lt;div class="line"&gt;
@@ -114,7 +109,7 @@ html
 
     br
     h4 #[code list]
-    with type #[code list] choosefont.js will initialize a html layout like following:
+    with type #[code list] #[b @xlfont/choose] will initialize a html layout like following:
     pre.card.bg-light.fg-secondary: .card-body.
       &lt;div&gt;
         &lt;div class="item"&gt;
@@ -144,8 +139,17 @@ html
 
     h3 License
     hr
-    p All source codes releasd by #[a(href="https://twitter.com/zbryikt") @zbryikt] under MIT License. check #[a(href="https://github.com/plotdb/choosefont.js") Github Repo] for more information.
+    p All source codes releasd by #[a(href="https://twitter.com/zbryikt") @zbryikt] under MIT License. check #[a(href="https://github.com/xlfont/choose/") Github Repo] for more information.
     br
     br
     br
-  script(src="js/index.js")
+
+    +script("assets/lib/bootstrap.native/main/bootstrap-native.min.js")
+    +script("assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.js")
+    +script("assets/lib/@loadingio/ldquery/main/ldq.min.js")
+    +script("assets/lib/ldcover/main/ldcv.min.js")
+    +script("assets/lib/clusterize.js/main/clusterize.min.js")
+    +script("assets/lib/@xlfont/load/main/index.min.js")
+    +script("assets/lib/@xlfont/choose/dev/index.min.js")
+    //-script(src="assets/ldf.js")
+    +script("js/index.js")

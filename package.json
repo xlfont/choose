@@ -18,20 +18,36 @@
     "deploy": "npx deploy"
   },
   "devDependencies": {
-    "livescript": "^1.6.0",
+    "@loadingio/ldquery": "^2.0.0",
+    "bootstrap": "^4.5.3",
+    "bootstrap.ldui": "github:loadingio/bootstrap.ldui",
+    "bootstrap.native": "^3.0.13",
+    "clusterize.js": "^0.18.1",
     "colors": "=1.1.2",
     "deploy": "github:zbryikt/deploy",
+    "fedep": "^0.0.12",
     "fs-extra": "^6.0.1",
+    "livescript": "^1.6.0",
     "pngquant": "^3.0.0",
     "progress": "^2.0.0",
-    "sharp": "^0.20.3",
+    "sharp": "^0.28.3",
     "stylus": "^0.54.5",
     "svg-path-bounding-box": "^1.0.4",
+    "svg-path-bounds": "^1.0.2",
     "svg2png": "^4.1.1",
     "template": "github:zbryikt/template#v2.3.13",
     "text-to-svg": "^3.1.3",
     "uglify-js": "=3.2.0",
-    "svg-path-bounds": "^1.0.2",
-    "uglifycss": "0.0.29"
+    "uglifycss": "^0.0.29"
+  },
+  "frontendDependencies": {
+    "root": "web/static/assets/lib",
+    "modules": [
+      "bootstrap",
+      "bootstrap.ldui",
+      "bootstrap.native",
+      "@loadingio/ldquery",
+      "clusterize.js"
+    ]
   }
 }
