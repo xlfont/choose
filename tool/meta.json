@@ -3,8 +3,6 @@
   "fonts/google-fonts/lohittamil/Lohit-Tamil.ttf": {"sample": "தமிழ்", "category": ["TAMIL"] },
   "fonts/chinese/851手書き雑フォント/851手書き雑フォント.ttf": ["HANDWRITING", "CHINESE"],
   "fonts/chinese/刻石錄/刻石錄明體.ttf": ["SERIF", "CHINESE"],
-  "fonts/chinese/刻石錄/刻石錄鋼筆鶴體.ttf": ["HANDWRITING", "CHINESE"],
-  "fonts/chinese/刻石錄/刻石錄顏體.ttf": ["SERIF", "CHINESE"],
   "fonts/chinese/瀨戶フォント/瀨戶字体.ttf": ["HANDWRITING", "CHINESE"],
   "fonts/chinese/站酷/站酷快乐体.ttf": ["DISPLAY", "CHINESE"],
   "fonts/chinese/站酷/站酷酷黑.ttf": ["DISPLAY", "CHINESE"],
