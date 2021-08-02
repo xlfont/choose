@@ -1,5 +1,8 @@
 require! <[fs fs-extra path js-yaml yargs @plotdb/opentype.js progress colors svg2png pngquant]>
 
+# sample command:
+# lsc build.ls -- ../../cdn/files/ -l links -o meta-sample/ -w 190 -s 18 -f 28 -p 2
+
 argv = yargs
   .usage "usage: npx xfc font-dir [-o meta-output-dir] [-l link-output-dir] [-w sample-image-width] [-h sample-image-height] [-f font-size]"
   .option \link, do
@@ -71,12 +74,16 @@ parse-pb = (root, file) ->
     else if /^\s*(\S+)\s*:\s*(.+)/.exec(line) =>
       [k, v] = [that.1.trim!, that.2.trim!]
       if /"([^"]+)"/.exec(v) => v = that.1
-      if Array.isArray(index[k]) => index[k].push v
+      if k == \category => v = (v or 'sans serif').replace(/_/g,' ')
+      if Array.isArray(index[k]) =>
+        v = (v or '').toLowerCase!trim!
+        index[k].push v
       if font =>
         if k in <[style weight]> => font[k.0] = v
         else if k == \filename => font.src = path.join(root, v)
       else
-        if k in <[name category]> => family[k.0] = v
+        if k == \name => family[k.0] = v
+        else if k == \category => family.c = v
         else if k == \subsets => family[][k.0].push v
     else 
       console.log "parse error", line
@@ -85,11 +92,11 @@ parse-pb = (root, file) ->
 parse-yaml = (root, file) ->
   ret = js-yaml.load fs.read-file-sync file
   ret = ret.map (d) ->
-    family = {fonts: [], n: d.name, c: d.category or 'sans serif'}
+    family = {fonts: [], n: d.name, c: (d.category or 'sans serif').toLowerCase!trim!}
     index.category.push family.c
     if d.displayname => family.d = d.displayname
     if d.subsets =>
-      family.s = d.subsets
+      family.s = d.subsets.filter(->it).map -> it.toLowerCase!trim!
       index.subsets ++= family.s
     for k,v of d.style =>
       index.style.push k
@@ -116,7 +123,7 @@ recurse = (root) ->
 
 recurse root.files
 for k,v of index =>
-  index[k] = Array.from(new Set(index[k]))
+  index[k] = Array.from(new Set(index[k].filter(-> it)))
   index[k] = index[k].sort (a,b) -> if a > b => 1 else if a < b => -1 else 0
 
 for family in families =>
@@ -128,6 +135,7 @@ for family in families =>
 
 for k,v of index =>
   index[k] = index[k].map -> it.toLowerCase!replace /sans_serif/, 'sans serif'
+
 output = {family: families, index, dim}
 
 render-fonts = []
@@ -139,7 +147,10 @@ for family in families =>
     else des-file = path.join(root.links, family.n, index.style[f.s], index.weight[f.w] + '.ttf')
     paths.push {s: f.s, w: f.w, x: f.x, p: des-file}
     fs-extra.ensure-dir-sync des-path
-    if fs.lstat-sync(des-file) => fs.unlink-sync des-file
+    try
+      if fs.lstat-sync(des-file) => fs.unlink-sync des-file
+    catch e
+      #
     fs.symlink-sync path.relative(des-path, f.src), des-file
     delete f.src
   paths.sort (a,b) ->
@@ -153,15 +164,29 @@ for family in families =>
 
 fs.write-file-sync path.join(root.meta, 'meta.json'), JSON.stringify(output)
 
+get-text = (font, text) ->
+  codes = text.split('').map -> it.charCodeAt(0)
+  unicodes = []
+  [v for k,v of font.glyphs.glyphs].map ->
+    (it.unicodes or []).map -> unicodes.push it
+    unicodes.push it.unicode
+  unicodes = Array.from(new Set(unicodes))
+  unicodes.sort (a,b) -> a - b
+  if codes.filter(-> ~unicodes.indexOf(it)).length < codes.length =>
+    unicodes = unicodes.filter -> (it > 64 and it <= 89) or (it >= 97 and it <= 122) or it > 256
+    text = unicodes.slice 0, 8 .map(-> String.fromCharCode(it)).join('')
+  return text
+
 render-font = (meta, row = 0, col = 0) ->
   opentype.load meta.path .then (font) ->
-    path = font.getPath(meta.name, 0, 0, dim.fsize)
+    text = get-text font, meta.name
+    path = font.getPath(text, 0, 0, dim.fsize)
     box = path.getBoundingBox!
     box.width = (box.x2 - box.x1) or 1
     box.height = (box.y2 - box.y1) or 1
-    if box.width >= dim.width or box.height >= dim.height =>
-      rate = Math.min(dim.width / box.width, dim.height / box.height)
-      path = font.getPath(meta.name, 0, 0, dim.fsize * rate)
+    if box.width >= (dim.width - dim.fsize) or box.height >= dim.height =>
+      rate = Math.min((dim.width - dim.fsize) / box.width, dim.height / box.height)
+      path = font.getPath(text, 0, 0, dim.fsize * rate)
       box = path.getBoundingBox!
       box.width = (box.x2 - box.x1) or 1
       box.height = (box.y2 - box.y1) or 1

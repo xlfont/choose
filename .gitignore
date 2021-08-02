@@ -5,3 +5,5 @@ node_modules
 _public
 web/.view
 tool/old
+tool/links
+src-old

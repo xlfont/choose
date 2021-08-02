@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 (function(){
-  var fs, fsExtra, path, jsYaml, yargs, opentype, progress, colors, svg2png, pngquant, argv, dim, root, families, index, parsePb, parseYaml, recurse, k, v, i$, len$, family, j$, ref$, len1$, f, output, renderFonts, paths, desPath, desFile, renderFont, renderAll;
+  var fs, fsExtra, path, jsYaml, yargs, opentype, progress, colors, svg2png, pngquant, argv, dim, root, families, index, parsePb, parseYaml, recurse, k, v, i$, len$, family, j$, ref$, len1$, f, output, renderFonts, paths, desPath, desFile, e, getText, renderFont, renderAll;
   fs = require('fs');
   fsExtra = require('fs-extra');
   path = require('path');
@@ -102,8 +102,10 @@
             font.src = path.join(root, v);
           }
         } else {
-          if (k === 'name' || k === 'category') {
+          if (k === 'name') {
             family[k[0]] = v;
+          } else if (k === 'category') {
+            family.c = (v || 'sans serif').toLowerCase().trim();
           } else if (k === 'subsets') {
             (family[key$ = k[0]] || (family[key$] = [])).push(v);
           }
@@ -122,7 +124,7 @@
       family = {
         fonts: [],
         n: d.name,
-        c: d.category || 'sans serif'
+        c: (d.category || 'sans serif').toLowerCase().trim()
       };
       index.category.push(family.c);
       if (d.displayname) {
@@ -223,8 +225,12 @@
         p: desFile
       });
       fsExtra.ensureDirSync(desPath);
-      if (fs.lstatSync(desFile)) {
-        fs.unlinkSync(desFile);
+      try {
+        if (fs.lstatSync(desFile)) {
+          fs.unlinkSync(desFile);
+        }
+      } catch (e$) {
+        e = e$;
       }
       fs.symlinkSync(path.relative(desPath, f.src), desFile);
       delete f.src;
@@ -238,18 +244,54 @@
     });
   }
   fs.writeFileSync(path.join(root.meta, 'meta.json'), JSON.stringify(output));
+  getText = function(font, text){
+    var codes, unicodes, k, v;
+    codes = text.split('').map(function(it){
+      return it.charCodeAt(0);
+    });
+    unicodes = [];
+    (function(){
+      var ref$, results$ = [];
+      for (k in ref$ = font.glyphs.glyphs) {
+        v = ref$[k];
+        results$.push(v);
+      }
+      return results$;
+    }()).map(function(it){
+      (it.unicodes || []).map(function(it){
+        return unicodes.push(it);
+      });
+      return unicodes.push(it.unicode);
+    });
+    unicodes = Array.from(new Set(unicodes));
+    unicodes.sort(function(a, b){
+      return a - b;
+    });
+    if (codes.filter(function(it){
+      return ~unicodes.indexOf(it);
+    }).length < codes.length) {
+      unicodes = unicodes.filter(function(it){
+        return (it > 64 && it <= 89) || (it >= 97 && it <= 122) || it > 256;
+      });
+      text = unicodes.slice(0, 8).map(function(it){
+        return String.fromCharCode(it);
+      }).join('');
+    }
+    return text;
+  };
   renderFont = function(meta, row, col){
     row == null && (row = 0);
     col == null && (col = 0);
     return opentype.load(meta.path).then(function(font){
-      var path, box, rate, d, x, y;
-      path = font.getPath(meta.name, 0, 0, dim.fsize);
+      var text, path, box, rate, d, x, y;
+      text = getText(font, meta.name);
+      path = font.getPath(text, 0, 0, dim.fsize);
       box = path.getBoundingBox();
       box.width = box.x2 - box.x1 || 1;
       box.height = box.y2 - box.y1 || 1;
-      if (box.width >= dim.width || box.height >= dim.height) {
-        rate = Math.min(dim.width / box.width, dim.height / box.height);
-        path = font.getPath(meta.name, 0, 0, dim.fsize * rate);
+      if (box.width >= dim.width - dim.fsize || box.height >= dim.height) {
+        rate = Math.min((dim.width - dim.fsize) / box.width, dim.height / box.height);
+        path = font.getPath(text, 0, 0, dim.fsize * rate);
         box = path.getBoundingBox();
         box.width = box.x2 - box.x1 || 1;
         box.height = box.y2 - box.y1 || 1;

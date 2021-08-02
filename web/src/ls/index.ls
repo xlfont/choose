@@ -1,21 +1,24 @@
-<- $ document .ready
-
 fontbase = "https://plotdb.github.io/xl-fontset/alpha"
-fontinfo = "assets/fontinfo"
+fontbase = "assets/font/links"
+fontinfo = "assets/font/meta"
 textarea = document.querySelector \#demo-textarea
 
-modal-chooser = new ChooseFont do
-  root: '.ldcv .choosefont', meta-url: "#fontinfo/meta.json", base: fontbase
+modal-chooser = new xfc {
+  root: '.ldcv .xfc', meta-url: "#fontinfo/meta.json", base: fontbase
+  meta-root: 'assets/fonts/meta'
+  font-root: 'assets/fonts/links'
+}
 modal-chooser.init!
 modal-chooser.on \choose, -> ldcv.toggle false
 
 window.ldcv = ldcv = new ldCover root: '.ldcv'
 
-dropdown-chooser = new ChooseFont do
+/*
+dropdown-chooser = new xfc do
   root: '#demo-dropdown', meta-url: "#fontinfo/meta.json", itemClass: \dropdown-item, type: \list, base: fontbase
 dropdown-chooser.init!
 dropdown-chooser.on \choose, (font) ->
-list-chooser = new ChooseFont do
+list-chooser = new xfc do
   root: '#demo-list-group', meta-url: "#fontinfo/meta.json", itemClass: \list-group-item, type: \list, base: fontbase
 list-chooser.init!
 [modal-chooser, list-chooser, dropdown-chooser].map ->
@@ -25,3 +28,4 @@ list-chooser.init!
 
 xfl.load "#fontbase/CroissantOne-Regular.ttf"
 xfl.load "#fontbase/Gafata-Regular.ttf"
+*/

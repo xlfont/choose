@@ -68,6 +68,9 @@
   text-align: center;
   bottom: 10px;
 }
+.xfc input {
+  outline: none;
+}
 .xfc .xfc-head {
   position: absolute;
   padding: 20px;
@@ -79,9 +82,6 @@
   background: #fff;
   text-align: center;
 }
-.xfc input {
-  outline: none;
-}
 .xfc .xfc-content {
   max-height: initial;
   height: 100%;
@@ -90,6 +90,9 @@
 }
 .xfc.toolbar .xfc-content {
   padding-top: 87px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 0.5em;
 }
 .xfc .clusterize-no-data {
   text-align: center;
