@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
+
+echo "prepare..."
 rm -rf dist
 mkdir -p dist
+rm -rf bin
+mkdir -p bin
+
 echo "build src/index.ls -> dist/index.js ..."
 npx lsc -cp --no-header src/index.ls > dist/index.js
 echo "build src/index.styl -> dist/index.css ..."
@@ -11,6 +16,12 @@ echo "minifying index.css ..."
 npx uglifycss dist/index.css > dist/index.min.css
 echo "Copy src/index.pug to dist/index.pug..."
 cp src/index.pug dist/index.pug
+
+echo "building build.ls -> bin/build.js ..."
+echo "#!/usr/bin/env node" > ./bin/build.js
+./node_modules/.bin/lsc -cp --no-header tool/build.ls >> bin/build.js
+chmod 755 ./bin/build.js
+
 echo "copy assets to dist/... "
 echo "copy files to web/... "
 rm -rf web/static/assets/lib/@xlfont/choose/
