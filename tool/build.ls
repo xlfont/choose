@@ -56,7 +56,7 @@ fs-extra.ensure-dir-sync root.links
 fs-extra.ensure-dir-sync root.meta
 
 families = []
-index = category: [], style: [], subsets: [], weight: []
+index = category: [], style: [], subset: [], weight: []
 
 
 parse-pb = (root, file) ->
@@ -75,6 +75,8 @@ parse-pb = (root, file) ->
       [k, v] = [that.1.trim!, that.2.trim!]
       if /"([^"]+)"/.exec(v) => v = that.1
       if k == \category => v = (v or 'sans serif').replace(/_/g,' ')
+      # Google use `subsets`. but we internally use `subset` to prevent confusion.
+      if k == \subsets => k = \subset
       if Array.isArray(index[k]) =>
         v = (v or '').toLowerCase!trim!
         index[k].push v
@@ -84,7 +86,7 @@ parse-pb = (root, file) ->
       else
         if k == \name => family[k.0] = v
         else if k == \category => family.c = v
-        else if k == \subsets => family[][k.0].push v
+        else if k == \subset => family[][k.0].push v
     else 
       console.log "parse error", line
   return family
@@ -95,9 +97,11 @@ parse-yaml = (root, file) ->
     family = {fonts: [], n: d.name, c: (d.category or 'sans serif').toLowerCase!trim!}
     index.category.push family.c
     if d.displayname => family.d = d.displayname
+    # Google use `subsets` in METADATA.pb, so we use `subsets` too in metadat.yaml.
+    # but anyway we internally use `subset` to prevent unnecessary confusion.
     if d.subsets =>
       family.s = d.subsets.filter(->it).map -> it.toLowerCase!trim!
-      index.subsets ++= family.s
+      index.subset ++= family.s
     for k,v of d.style =>
       index.style.push k
       for f in v =>
@@ -130,7 +134,7 @@ for family in families =>
   for f in family.fonts =>
     f.s = index.style.indexOf(f.s)
     f.w = index.weight.indexOf(f.w)
-  family.s = family.[]s.map -> index.subsets.indexOf(it)
+  family.s = family.[]s.map -> index.subset.indexOf(it)
   family.c = index.category.indexOf(family.c)
 
 for k,v of index =>
@@ -155,7 +159,8 @@ for family in families =>
     delete f.src
   paths.sort (a,b) ->
     [v1,v2] = [0,0]
-    [a, b] = [a, b].map (d) -> (if d.s == \normal => 0 else 100) + (Math.abs(+d.w - 400) / 10)
+    [a, b] = [a, b].map (d) ->
+      (if index.style[d.s] == \normal => 0 else 100) + (Math.abs(+index.weight[d.w] - 400) / 10)
     return a - b
   render-fonts.push {
     name: (family.d or family.n)

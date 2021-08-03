@@ -63,7 +63,7 @@
   index = {
     category: [],
     style: [],
-    subsets: [],
+    subset: [],
     weight: []
   };
   parsePb = function(root, file){
@@ -92,7 +92,14 @@
         if (that = /"([^"]+)"/.exec(v)) {
           v = that[1];
         }
+        if (k === 'category') {
+          v = (v || 'sans serif').replace(/_/g, ' ');
+        }
+        if (k === 'subsets') {
+          k = 'subset';
+        }
         if (Array.isArray(index[k])) {
+          v = (v || '').toLowerCase().trim();
           index[k].push(v);
         }
         if (font) {
@@ -105,8 +112,8 @@
           if (k === 'name') {
             family[k[0]] = v;
           } else if (k === 'category') {
-            family.c = (v || 'sans serif').toLowerCase().trim();
-          } else if (k === 'subsets') {
+            family.c = v;
+          } else if (k === 'subset') {
             (family[key$ = k[0]] || (family[key$] = [])).push(v);
           }
         }
@@ -131,8 +138,12 @@
         family.d = d.displayname;
       }
       if (d.subsets) {
-        family.s = d.subsets;
-        index.subsets = index.subsets.concat(family.s);
+        family.s = d.subsets.filter(function(it){
+          return it;
+        }).map(function(it){
+          return it.toLowerCase().trim();
+        });
+        index.subset = index.subset.concat(family.s);
       }
       for (k in ref$ = d.style) {
         v = ref$[k];
@@ -184,8 +195,8 @@
   recurse(root.files);
   for (k in index) {
     v = index[k];
-    index[k] = Array.from(new Set(index[k]));
-    index[k] = index[k].sort(fn$);
+    index[k] = Array.from(new Set(index[k].filter(fn$)));
+    index[k] = index[k].sort(fn1$);
   }
   for (i$ = 0, len$ = families.length; i$ < len$; ++i$) {
     family = families[i$];
@@ -194,12 +205,12 @@
       f.s = index.style.indexOf(f.s);
       f.w = index.weight.indexOf(f.w);
     }
-    family.s = (family.s || (family.s = [])).map(fn1$);
+    family.s = (family.s || (family.s = [])).map(fn2$);
     family.c = index.category.indexOf(family.c);
   }
   for (k in index) {
     v = index[k];
-    index[k] = index[k].map(fn2$);
+    index[k] = index[k].map(fn3$);
   }
   output = {
     family: families,
@@ -235,7 +246,7 @@
       fs.symlinkSync(path.relative(desPath, f.src), desFile);
       delete f.src;
     }
-    paths.sort(fn3$);
+    paths.sort(fn4$);
     renderFonts.push({
       name: family.d || family.n,
       path: paths[0].x
@@ -352,7 +363,10 @@
   }).then(function(){
     return console.log("   done.".green);
   });
-  function fn$(a, b){
+  function fn$(it){
+    return it;
+  }
+  function fn1$(a, b){
     if (a > b) {
       return 1;
     } else if (a < b) {
@@ -361,17 +375,17 @@
       return 0;
     }
   }
-  function fn1$(it){
-    return index.subsets.indexOf(it);
-  }
   function fn2$(it){
+    return index.subset.indexOf(it);
+  }
+  function fn3$(it){
     return it.toLowerCase().replace(/sans_serif/, 'sans serif');
   }
-  function fn3$(a, b){
+  function fn4$(a, b){
     var ref$, v1, v2;
     ref$ = [0, 0], v1 = ref$[0], v2 = ref$[1];
     ref$ = [a, b].map(function(d){
-      return (d.s === 'normal' ? 0 : 100) + Math.abs(+d.w - 400) / 10;
+      return (index.style[d.s] === 'normal' ? 0 : 100) + Math.abs(+index.weight[d.w] - 400) / 10;
     }), a = ref$[0], b = ref$[1];
     return a - b;
   }

@@ -12,6 +12,10 @@ modal-chooser.init!
 modal-chooser.on \choose, -> ldcv.toggle false
 
 window.ldcv = ldcv = new ldCover root: '.ldcv'
+modal-chooser.on \choose, (f) ->
+  window.ldcv.toggle \false
+  textarea.style.fontFamily = f.name
+  f.sync textarea.value
 
 /*
 dropdown-chooser = new xfc do

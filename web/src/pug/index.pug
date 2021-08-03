@@ -41,7 +41,7 @@ html
     hr
     .row
       .col-sm-3
-        .btn.btn-outline-dark.btn-lg.mb-2.btn-block(onclick="ldcv.toggle();") Choose in Dialog ...
+        .btn.btn-outline-dark.btn-lg.mb-2.btn-block(onclick="ldcv.toggle(true);") Choose in Dialog ...
         .dropdown.mb-2
           .btn.btn-outline-dark.dropdown-toggle.btn-lg.btn-block(data-toggle="dropdown") Choose via Dropdown
           #demo-dropdown.dropdown-menu(style="width:100%")
@@ -147,10 +147,11 @@ html
     +script("assets/lib/bootstrap.native/main/bootstrap-native-v4.min.js")
     +script("assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.js")
     +script("assets/lib/@loadingio/ldquery/main/ldq.min.js")
+    +script("assets/lib/proxise/main/proxise.min.js")
     +script("assets/lib/ldcover/main/ldcv.min.js")
     +script("assets/lib/clusterize.js/main/clusterize.min.js")
-    +script("assets/lib/@xlfont/load/main/xfl.min.js")
-    +script("assets/lib/ldview/main/index.min.js")
+    +script("assets/lib/@xlfont/load/main/xfl.js")
+    +script("assets/lib/ldview/main/index.js")
     +script("assets/lib/@xlfont/choose/dev/index.min.js")
     //-script(src="assets/ldf.js")
     +script("js/index.js")

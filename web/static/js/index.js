@@ -17,6 +17,11 @@ modalChooser.on('choose', function(){
 window.ldcv = ldcv = new ldCover({
   root: '.ldcv'
 });
+modalChooser.on('choose', function(f){
+  window.ldcv.toggle('false');
+  textarea.style.fontFamily = f.name;
+  return f.sync(textarea.value);
+});
 /*
 dropdown-chooser = new xfc do
   root: '#demo-dropdown', meta-url: "#fontinfo/meta.json", itemClass: \dropdown-item, type: \list, base: fontbase

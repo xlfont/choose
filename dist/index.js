@@ -33,6 +33,23 @@
       }
       return results$;
     },
+    load: function(opt){
+      var family, font, that, s, w, path;
+      family = typeof opt === 'number' ? this.meta.family[opt] : opt;
+      font = family.fonts[0];
+      if (that = font.xfont) {
+        return Promise.resolve(that);
+      }
+      s = this.meta.index.style[font.s];
+      w = this.meta.index.weight[font.w];
+      path = this.fontRoot + "/" + family.n + "/" + s + "/" + w + (font.x ? '' : '.ttf');
+      return xfl.load({
+        path: path,
+        name: family.n
+      }).then(function(it){
+        return font.xfont = it;
+      });
+    },
     init: function(){
       var p, this$ = this;
       p = new Promise(function(res, rej){
@@ -61,28 +78,56 @@
         return xhr.send();
       });
       return p.then(function(){
-        console.log(this$.meta);
+        this$.cfg = {};
         return this$.view = new ldview({
           root: this$.root,
           handler: {
+            "cur-subset": function(arg$){
+              var node;
+              node = arg$.node;
+              return node.textContent = this$.cfg.subset || 'All';
+            },
+            "cur-cat": function(arg$){
+              var node;
+              node = arg$.node;
+              return node.textContent = this$.cfg.category || 'All';
+            },
             category: {
               list: function(){
-                return this$.meta.index.category;
+                return ['all'].concat(this$.meta.index.category);
+              },
+              action: {
+                click: function(arg$){
+                  var node, data;
+                  node = arg$.node, data = arg$.data;
+                  this$.cfg.category = data;
+                  return this$.view.render(['font', 'cur-cat', 'category']);
+                }
               },
               handler: function(arg$){
                 var node, data;
                 node = arg$.node, data = arg$.data;
-                return node.textContent = data;
+                node.textContent = data;
+                return node.classList.toggle('active', this$.cfg.category === data || (!this$.cfg.category && data === 'all'));
               }
             },
             subset: {
               list: function(){
-                return this$.meta.index.subsets;
+                return ['all'].concat(this$.meta.index.subset);
+              },
+              action: {
+                click: function(arg$){
+                  var node, data;
+                  node = arg$.node, data = arg$.data;
+                  this$.cfg.subset = data;
+                  return this$.view.render(['font', 'cur-subset', 'subset']);
+                }
               },
               handler: function(arg$){
                 var node, data;
                 node = arg$.node, data = arg$.data;
-                return node.textContent = data;
+                node.textContent = data;
+                return node.classList.toggle('active', this$.cfg.subset === data || (!this$.cfg.subset && data === 'all'));
               }
             },
             font: {
@@ -90,9 +135,30 @@
                 return this$.meta.family;
               },
               key: function(it){
-                return it.name;
+                return it.n;
+              },
+              action: {
+                click: function(arg$){
+                  var node, data, idx;
+                  node = arg$.node, data = arg$.data, idx = arg$.idx;
+                  this$.fire('load.start');
+                  return this$.load(data)['finally'](function(){
+                    return this$.fire('load.end');
+                  }).then(function(it){
+                    return this$.fire('choose', it);
+                  })['catch'](function(it){
+                    console.error("[@xlfont/choose] font load failed: ", it);
+                    return this$.fire('load.fail', it);
+                  });
+                }
               },
               handler: function(arg$){
+                var node, data, idx, ref$, c, s;
+                node = arg$.node, data = arg$.data, idx = arg$.idx;
+                ref$ = [this$.cfg.category, this$.cfg.subset, this$.meta.index], c = ref$[0], s = ref$[1], idx = ref$[2];
+                return node.classList.toggle('d-none', !(!c || c === 'all' || idx.category.indexOf(c) === data.c) || !(!s || s === 'all' || in$(idx.subset.indexOf(s), data.s)));
+              },
+              init: function(arg$){
                 var node, data, idx, col, row, w, h;
                 node = arg$.node, data = arg$.data, idx = arg$.idx;
                 node.textContent = ' ';
@@ -105,7 +171,7 @@
                   height: h + "px",
                   backgroundImage: "url(" + this$.metaRoot + "/sprite.min.png)",
                   backgroundPosition: -w * col + "px " + -h * row + "px",
-                  margin: '.25em'
+                  margin: 'auto'
                 });
               }
             }
@@ -123,5 +189,10 @@
     var own = {}.hasOwnProperty;
     for (var key in src) if (own.call(src, key)) obj[key] = src[key];
     return obj;
+  }
+  function in$(x, xs){
+    var i = -1, l = xs.length >>> 0;
+    while (++i < l) if (x === xs[i]) return true;
+    return false;
   }
 }).call(this);

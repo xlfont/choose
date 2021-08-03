@@ -1,18 +1,27 @@
 //- module
 mixin xfc
-  .xfc.toolbar
-    .xfc-head.form-inline.d-flex
-      .dropdown.mr-2
-        .btn.btn-outline-secondary.dropdown-toggle(data-toggle="dropdown") Category ...
-        .dropdown-menu.shadow-sm(style="max-height:50vh;overscroll-behavior:contain;overflow-y:scroll")
-          .dropdown-item(ld-each="category")
-      .dropdown.mr-2
-        .btn.btn-outline-secondary.dropdown-toggle(data-toggle="dropdown") Subset ...
-        .dropdown-menu.shadow-sm(style="max-height:50vh;overscroll-behavior:contain;overflow-y:scroll")
-          .dropdown-item(ld-each="subset")
-      .flex-grow-1.d-flex.justify-content-start: input.form-control(ld="search", placeholder="Search...")
-      .btn.btn-text.mx-2 or
-      .btn.btn-outline-secondary.btn-upload(ld="upload") Upload #[input(type="file")]
-    .xfc-content
+  .xfc.toolbar.d-flex.flex-column.h-100
+    .xfc-head.d-flex.px-3.py-2.border-bottom
+      .mr-2.text-left
+        .text-muted(style="font-size:12px") Category
+        .dropdown
+          .btn.btn-sm.btn-outline-secondary.dropdown-toggle(ld="cur-cat",style="min-width:5em",data-toggle="dropdown")
+          .dropdown-menu.shadow-sm(style="max-height:50vh;overscroll-behavior:contain;overflow-y:scroll")
+            .dropdown-item(ld-each="category")
+      .mr-2.text-left
+        .text-muted(style="font-size:12px") Subset
+        .dropdown.mr-2
+          .btn.btn-sm.btn-outline-secondary.dropdown-toggle(ld="cur-subset",style="min-width:5em",data-toggle="dropdown")
+          .dropdown-menu.shadow-sm(style="max-height:50vh;overscroll-behavior:contain;overflow-y:scroll")
+            .dropdown-item(ld-each="subset")
+      .flex-grow-1.text-left
+        .text-muted(style="font-size:12px") Name
+        input.form-control.form-control-sm(ld="search", placeholder="Search...")
+      div
+        .text-muted(style="font-size:12px") &nbsp;
+        .btn.btn-sm.btn-text.mx-2 or
+        .btn.btn-sm.btn-outline-secondary.btn-upload(ld="upload") Upload #[input(type="file")]
+
+    .xfc-content(style="overflow-y:scroll;overscroll-behavior:contain;"): .my-4(style="display:grid;grid-template-columns:repeat(4,1fr);gap:.5em")
       .xfc-font(ld-each="font")
     block
