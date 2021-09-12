@@ -8,11 +8,11 @@ font chooser including
 
 ## Frontend Usage
 
-install by
+`@xlfont/choose` depends on `@xlfont/load` so you have to install both. Install by
 
-    npm install --save @xlfont/choose
+    npm install --save @xlfont/choose @xlfont/load
 
-and include `index.js` and `index.css` under `@xlfont/choose`'s `dist` folder.
+and include `index.js` and `index.css` under `@xlfont/choose`'s `dist` folder, along with `index.js` in `@xlfont/load`.
 
 HTML counterpart is also needed, which is available as a mixin in `dist/index.pug`, in `pug` format. `@xlfont/choose` is based on `ldview` which means UI / Logic is separated thus you can make your own chooser widget to fit your design ( while the JS Selectors are not documented so you have to check `index.pug` for reference. )
 
