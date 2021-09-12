@@ -7,13 +7,13 @@ rm -rf bin
 mkdir -p bin
 
 echo "build src/index.ls -> dist/index.js ..."
-npx lsc -cp --no-header src/index.ls > dist/index.js
+./node_modules/.bin/lsc -cp --no-header src/index.ls > dist/index.js
 echo "build src/index.styl -> dist/index.css ..."
-npx stylus -p src/index.styl > dist/index.css
+./node_modules/.bin/stylus -p src/index.styl > dist/index.css
 echo "minifying index.js ..."
-npx uglifyjs dist/index.js > dist/index.min.js
+./node_modules/.bin/uglifyjs dist/index.js > dist/index.min.js
 echo "minifying index.css ..."
-npx uglifycss dist/index.css > dist/index.min.css
+./node_modules/.bin/uglifycss dist/index.css > dist/index.min.css
 echo "Copy src/index.pug to dist/index.pug..."
 cp src/index.pug dist/index.pug
 
