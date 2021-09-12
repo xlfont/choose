@@ -1,5 +1,5 @@
 (function(){
-  var once, xfc;
+  var once, i18n, xfc;
   once = function(f, q){
     q == null && (q = []);
     return function(){
@@ -22,21 +22,37 @@
         });
       })['catch'](function(e){
         q.s = 0;
-        return q.splice(0).map(function(it){
+        q.splice(0).map(function(it){
           return it.rej(e);
         });
+        return Promise.reject(e);
       });
     };
+  };
+  i18n = {
+    "zh-TW": {
+      "Category": "分類",
+      "Subset": "子集",
+      "Name": "名稱",
+      "Upload": "上傳",
+      "or": "或",
+      "Cancel": "取消"
+    }
   };
   xfc = function(opt){
     var this$ = this;
     opt == null && (opt = {});
     this.metaRoot = opt.metaRoot;
     this.fontRoot = opt.fontRoot;
-    this.root = typeof this.root === 'string'
+    this.root = typeof opt.root === 'string'
       ? document.querySelector(opt.root)
       : opt.root;
     this.evtHandler = {};
+    this.i18n = opt.i18n || {
+      t: function(it){
+        return it;
+      }
+    };
     this.init = once(function(){
       return this$._init();
     });
@@ -110,19 +126,38 @@
         return xhr.send();
       });
       return p.then(function(){
+        var k, ref$, v;
         this$.cfg = {};
+        if (this$.i18n.addResourceBundle) {
+          for (k in ref$ = i18n) {
+            v = ref$[k];
+            this$.i18n.addResourceBundle(k, '@plotdb/choose', v, true, true);
+          }
+          Array.from(this$.root.querySelectorAll('[t]')).map(function(n){
+            return n.textContent = this$.i18n.t("@plotdb/choose:" + n.textContent);
+          });
+        }
         return this$.view = new ldview({
           root: this$.root,
+          action: {
+            click: {
+              cancel: function(){
+                return this$.fire('choose', null);
+              }
+            }
+          },
           handler: {
             "cur-subset": function(arg$){
               var node;
               node = arg$.node;
-              return node.textContent = this$.cfg.subset || 'All';
+              node.textContent = this$.cfg.subset || 'all';
+              return node.classList.toggle('active', !!(this$.cfg.subset && this$.cfg.subset !== 'all'));
             },
             "cur-cat": function(arg$){
               var node;
               node = arg$.node;
-              return node.textContent = this$.cfg.category || 'All';
+              node.textContent = this$.cfg.category || 'all';
+              return node.classList.toggle('active', !!(this$.cfg.category && this$.cfg.category !== 'all'));
             },
             category: {
               list: function(){
@@ -162,6 +197,12 @@
                 return node.classList.toggle('active', this$.cfg.subset === data || (!this$.cfg.subset && data === 'all'));
               }
             },
+            "font-list": function(arg$){
+              var node, w;
+              node = arg$.node;
+              w = this$.meta.dim.width;
+              return node.style.gridTemplateColumns = "repeat(auto-fill," + w + "px)";
+            },
             font: {
               list: function(){
                 return this$.meta.family;
@@ -191,20 +232,21 @@
                 return node.classList.toggle('d-none', !(!c || c === 'all' || idx.category.indexOf(c) === data.c) || !(!s || s === 'all' || in$(idx.subset.indexOf(s), data.s)));
               },
               init: function(arg$){
-                var node, data, idx, col, row, w, h;
+                var node, data, idx, col, row, p, w, h, n;
                 node = arg$.node, data = arg$.data, idx = arg$.idx;
-                node.textContent = ' ';
                 col = idx % this$.meta.dim.col;
                 row = Math.floor(idx / this$.meta.dim.col);
-                w = this$.meta.dim.width + this$.meta.dim.padding;
-                h = this$.meta.dim.height + this$.meta.dim.padding;
-                return import$(node.style, {
+                p = this$.meta.dim.padding;
+                w = this$.meta.dim.width;
+                h = this$.meta.dim.height;
+                n = node.querySelector('[ld=name]');
+                import$(node.style, {
                   width: w + "px",
                   height: h + "px",
                   backgroundImage: "url(" + this$.metaRoot + "/sprite.min.png)",
-                  backgroundPosition: -w * col + "px " + -h * row + "px",
-                  margin: 'auto'
+                  backgroundPosition: -(w + p) * col + "px " + -(h + p) * row + "px"
                 });
+                return n.textContent = data.n;
               }
             }
           }

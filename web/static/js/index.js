@@ -1,19 +1,27 @@
-var fontbase, fontinfo, textarea, modalChooser, ldcv;
-fontbase = "https://plotdb.github.io/xl-fontset/alpha";
-fontbase = "assets/font/links";
-fontinfo = "assets/font/meta";
+var textarea, base;
 textarea = document.querySelector('#demo-textarea');
-modalChooser = new xfc({
-  root: '.ldcv .xfc',
-  metaRoot: 'assets/fonts/meta',
-  fontRoot: 'assets/fonts/links'
-});
-modalChooser.init();
-window.ldcv = ldcv = new ldCover({
-  root: '.ldcv'
-});
-modalChooser.on('choose', function(f){
-  window.ldcv.toggle(false);
-  textarea.style.fontFamily = f.name;
-  return f.sync(textarea.value);
+base = "https://xlfont.github.io/sample-set";
+i18next.init({
+  supportedLng: ['en', 'zh-TW'],
+  fallbackLng: 'zh-TW'
+}).then(function(){
+  var modalChooser, ldcv;
+  modalChooser = new xfc({
+    root: '.ldcv .xfc',
+    metaRoot: base + "/meta",
+    fontRoot: base + "/links",
+    i18n: i18next
+  });
+  modalChooser.init();
+  window.ldcv = ldcv = new ldCover({
+    root: '.ldcv'
+  });
+  return modalChooser.on('choose', function(f){
+    window.ldcv.toggle(false);
+    if (!f) {
+      return;
+    }
+    textarea.style.fontFamily = f.name;
+    return f.sync(textarea.value);
+  });
 });
