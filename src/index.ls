@@ -1,7 +1,16 @@
+once = (f, q = []) -> ->
+  if q.s == 2 => return Promise.resolve!
+  else if q.s == 1 => return new Promise (res, rej) -> q.push {res, rej}
+  Promise.resolve(q.s = 1)
+    .then -> f!
+    .then -> q.s = 2; q.splice 0 .map -> it.res!
+    .catch (e) -> q.s = 0; q.splice 0 .map -> it.rej e
+
 xfc = (opt = {}) ->
   @ <<< opt{meta-root, font-root}
   @root = if typeof(@root) == \string => document.querySelector(opt.root) else opt.root
   @evt-handler = {}
+  @init = once ~> @_init!
   @
 
 xfc.prototype = Object.create(Object.prototype) <<< do
@@ -17,7 +26,7 @@ xfc.prototype = Object.create(Object.prototype) <<< do
     xfl.load {path, name: family.n}
       .then -> return font.xfont = it
 
-  init: ->
+  _init: ->
     p = new Promise (res, rej) ~>
       xhr = new XMLHttpRequest!
       xhr.addEventListener \readystatechange, ~>

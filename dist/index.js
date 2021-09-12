@@ -1,6 +1,35 @@
 (function(){
-  var xfc;
+  var once, xfc;
+  once = function(f, q){
+    q == null && (q = []);
+    return function(){
+      if (q.s === 2) {
+        return Promise.resolve();
+      } else if (q.s === 1) {
+        return new Promise(function(res, rej){
+          return q.push({
+            res: res,
+            rej: rej
+          });
+        });
+      }
+      return Promise.resolve(q.s = 1).then(function(){
+        return f();
+      }).then(function(){
+        q.s = 2;
+        return q.splice(0).map(function(it){
+          return it.res();
+        });
+      })['catch'](function(e){
+        q.s = 0;
+        return q.splice(0).map(function(it){
+          return it.rej(e);
+        });
+      });
+    };
+  };
   xfc = function(opt){
+    var this$ = this;
     opt == null && (opt = {});
     this.metaRoot = opt.metaRoot;
     this.fontRoot = opt.fontRoot;
@@ -8,6 +37,9 @@
       ? document.querySelector(opt.root)
       : opt.root;
     this.evtHandler = {};
+    this.init = once(function(){
+      return this$._init();
+    });
     return this;
   };
   xfc.prototype = import$(Object.create(Object.prototype), {
@@ -50,7 +82,7 @@
         return font.xfont = it;
       });
     },
-    init: function(){
+    _init: function(){
       var p, this$ = this;
       p = new Promise(function(res, rej){
         var xhr;
