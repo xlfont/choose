@@ -1,9 +1,59 @@
-# Choosefont.js
+# @plotdb/choose
 
-Resource packer and widget for super fast in-browser font picking experience.
+font chooser including
+
+ - ui and library for chooser dynamics
+ - tool for building meta files from fonts of your choice.
 
 
-## Build Resource
+## Frontend Usage
+
+install by
+
+    npm install --save @xlfont/choose
+
+and include `index.js` and `index.css` under `@xlfont/choose`'s `dist` folder.
+
+HTML counterpart is also needed, which is available as a mixin in `dist/index.pug`, in `pug` format. `@xlfont/choose` is based on `ldview` which means UI / Logic is separated thus you can make your own chooser widget to fit your design ( while the JS Selectors are not documented so you have to check `index.pug` for reference. )
+
+After installed, create a `xfc` instance:
+
+    chooser = new xfc( ... )
+
+Here is a minimal working example in `pug`, with `@plotdb/srcbuild` pug extension syntax:
+
+    include @/@xlfont/choose/dist/index.pug
+    .ldcv: +xfc
+    script: include:lsc
+      chooser = new xfc do
+        root: '.ldcv'
+
+## Metadata Generation
+
+To generate metadata, also install `@xlfont/choose` if not installed yet:
+
+    npm install --save-dev @xlfont/choose
+
+A command (via npx) will be available after install:
+
+    npx xfc
+
+This command generates necessary files for `@xlfont/choose` to list your fonts. It generates:
+
+ - a minimized PNG for previewing fonts.
+ - metadata for font information, including name, style and position in previewer PNG.
+ - a directory structure recgonized by `@xlfont/choose`, with symbolic links to the fonts your provided. 
+
+Avilable options:
+
+ - `--link`: output directory for symbolic links to font. default `./output/links`.
+ - `--output`: output directory for metadata. default `./output/meta`.
+ - `--font-size`: default font size. default 48, auto shrink if needed.
+
+For a complete list of possible options, please run `npx xfc --help` directly.
+
+
+## Build 
 
 1. prepare your font files under ```tool/fonts``` directory.
     1. choosefont will traverse and find all ttf files automatically.
