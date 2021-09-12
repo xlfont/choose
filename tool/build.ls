@@ -1,5 +1,9 @@
 require! <[fs fs-extra path js-yaml yargs @plotdb/opentype.js progress colors svg2png pngquant]>
 
+sample-texts =
+  "bengali": "নমুনা পাঠ"
+  "khmer": "អត្ថបទគំរូ"
+
 # sample command:
 # lsc build.ls -- ../../cdn/files/ -l links -o meta-sample/ -w 190 -s 18 -f 28 -p 2
 
@@ -22,7 +26,7 @@ argv = yargs
     description: "font sample image width, default 400"
     type: \number
   .option \sample-image-height, do
-    alias: \s
+    alias: \h
     description: "font sample image height, default 50"
     type: \number
   .option \sample-per-row, do
@@ -34,7 +38,6 @@ argv = yargs
     description: "image padding. default 10"
     type: \number
   .help \help
-  .alias \help, \h
   .check (argv, options) ->
     if !argv._.0 => throw new Error("missing font dir")
     return true
@@ -44,7 +47,7 @@ dim =
   width: argv.w or 400
   height: argv.h or 50
   col: argv.c or 5
-  padding: argv.p or 10
+  padding: if argv.p? => argv.p else 10
   fsize: argv.f or 48
 
 root =
@@ -165,11 +168,12 @@ for family in families =>
   render-fonts.push {
     name: (family.d or family.n)
     path: if paths.0.x => path.join(paths.0.p, "all.ttf") else paths.0.p
+    subset: family.s.map(-> index.subset[it])
   }
 
 fs.write-file-sync path.join(root.meta, 'meta.json'), JSON.stringify(output)
 
-get-text = (font, text) ->
+get-text = (font, text, meta = {}) ->
   codes = text.split('').map -> it.charCodeAt(0)
   unicodes = []
   [v for k,v of font.glyphs.glyphs].map ->
@@ -179,12 +183,17 @@ get-text = (font, text) ->
   unicodes.sort (a,b) -> a - b
   if codes.filter(-> ~unicodes.indexOf(it)).length < codes.length =>
     unicodes = unicodes.filter -> (it > 64 and it <= 89) or (it >= 97 and it <= 122) or it > 256
-    text = unicodes.slice 0, 8 .map(-> String.fromCharCode(it)).join('')
+    text = unicodes
+      .filter -> it != 894 # filter ';'
+      .slice 0, 8
+      .map(-> String.fromCharCode(it))
+      .join('')
+    for k,v of sample-texts => if k in meta.subset => text = v
   return text
 
 render-font = (meta, row = 0, col = 0) ->
   opentype.load meta.path .then (font) ->
-    text = get-text font, meta.name
+    text = get-text font, meta.name, meta
     path = font.getPath(text, 0, 0, dim.fsize)
     box = path.getBoundingBox!
     box.width = (box.x2 - box.x1) or 1
@@ -211,7 +220,7 @@ render-all = -> new Promise (res, rej) ->
     bar.tick!
     if !render-fonts[idx] =>
       w = (dim.width + dim.padding) * dim.col - dim.padding
-      h = (dim.height + dim.padding) * Math.ceil(paths.length / dim.col)
+      h = (dim.height + dim.padding) * Math.ceil(paths.length / dim.col) - dim.padding
       ret = """
       <?xml version="1.0" encoding="utf-8"?>
       <svg xmlns="http://www.w3.org/2000/svg" width="#w" height="#h" viewBox="0 0 #w #h">

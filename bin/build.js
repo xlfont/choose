@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 (function(){
-  var fs, fsExtra, path, jsYaml, yargs, opentype, progress, colors, svg2png, pngquant, argv, dim, root, families, index, parsePb, parseYaml, recurse, k, v, i$, len$, family, j$, ref$, len1$, f, output, renderFonts, paths, desPath, desFile, e, getText, renderFont, renderAll;
+  var fs, fsExtra, path, jsYaml, yargs, opentype, progress, colors, svg2png, pngquant, sampleTexts, argv, dim, root, families, index, parsePb, parseYaml, recurse, k, v, i$, len$, family, j$, ref$, len1$, f, output, renderFonts, paths, desPath, desFile, e, getText, renderFont, renderAll;
   fs = require('fs');
   fsExtra = require('fs-extra');
   path = require('path');
@@ -11,6 +11,10 @@
   colors = require('colors');
   svg2png = require('svg2png');
   pngquant = require('pngquant');
+  sampleTexts = {
+    "bengali": "নমুনা পাঠ",
+    "khmer": "អត្ថបទគំរូ"
+  };
   argv = yargs.usage("usage: npx xfc font-dir [-o meta-output-dir] [-l link-output-dir] [-w sample-image-width] [-h sample-image-height] [-f font-size]").option('link', {
     alias: 'l',
     description: "link output directory. default `./output/links/`",
@@ -28,7 +32,7 @@
     description: "font sample image width, default 400",
     type: 'number'
   }).option('sample-image-height', {
-    alias: 's',
+    alias: 'h',
     description: "font sample image height, default 50",
     type: 'number'
   }).option('sample-per-row', {
@@ -39,7 +43,7 @@
     alias: 'p',
     description: "image padding. default 10",
     type: 'number'
-  }).help('help').alias('help', 'h').check(function(argv, options){
+  }).help('help').check(function(argv, options){
     if (!argv._[0]) {
       throw new Error("missing font dir");
     }
@@ -49,7 +53,7 @@
     width: argv.w || 400,
     height: argv.h || 50,
     col: argv.c || 5,
-    padding: argv.p || 10,
+    padding: argv.p != null ? argv.p : 10,
     fsize: argv.f || 48
   };
   root = {
@@ -251,12 +255,14 @@
       name: family.d || family.n,
       path: paths[0].x
         ? path.join(paths[0].p, "all.ttf")
-        : paths[0].p
+        : paths[0].p,
+      subset: family.s.map(fn5$)
     });
   }
   fs.writeFileSync(path.join(root.meta, 'meta.json'), JSON.stringify(output));
-  getText = function(font, text){
-    var codes, unicodes, k, v;
+  getText = function(font, text, meta){
+    var codes, unicodes, k, v, ref$;
+    meta == null && (meta = {});
     codes = text.split('').map(function(it){
       return it.charCodeAt(0);
     });
@@ -284,9 +290,17 @@
       unicodes = unicodes.filter(function(it){
         return (it > 64 && it <= 89) || (it >= 97 && it <= 122) || it > 256;
       });
-      text = unicodes.slice(0, 8).map(function(it){
+      text = unicodes.filter(function(it){
+        return it !== 894;
+      }).slice(0, 8).map(function(it){
         return String.fromCharCode(it);
       }).join('');
+      for (k in ref$ = sampleTexts) {
+        v = ref$[k];
+        if (in$(k, meta.subset)) {
+          text = v;
+        }
+      }
     }
     return text;
   };
@@ -295,7 +309,7 @@
     col == null && (col = 0);
     return opentype.load(meta.path).then(function(font){
       var text, path, box, rate, d, x, y;
-      text = getText(font, meta.name);
+      text = getText(font, meta.name, meta);
       path = font.getPath(text, 0, 0, dim.fsize);
       box = path.getBoundingBox();
       box.width = box.x2 - box.x1 || 1;
@@ -328,7 +342,7 @@
         bar.tick();
         if (!renderFonts[idx]) {
           w = (dim.width + dim.padding) * dim.col - dim.padding;
-          h = (dim.height + dim.padding) * Math.ceil(paths.length / dim.col);
+          h = (dim.height + dim.padding) * Math.ceil(paths.length / dim.col) - dim.padding;
           ret = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" + w + "\" height=\"" + h + "\" viewBox=\"0 0 " + w + " " + h + "\">\n" + paths.join('') + "\n</svg>";
           return res(ret);
         }
@@ -388,5 +402,13 @@
       return (index.style[d.s] === 'normal' ? 0 : 100) + Math.abs(+index.weight[d.w] - 400) / 10;
     }), a = ref$[0], b = ref$[1];
     return a - b;
+  }
+  function fn5$(it){
+    return index.subset[it];
+  }
+  function in$(x, xs){
+    var i = -1, l = xs.length >>> 0;
+    while (++i < l) if (x === xs[i]) return true;
+    return false;
   }
 }).call(this);
