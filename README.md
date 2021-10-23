@@ -1,4 +1,4 @@
-# @plotdb/choose
+# @xlfont/choose
 
 font chooser including
 
