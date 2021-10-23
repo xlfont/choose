@@ -1,5 +1,7 @@
 # Change Logs
 
-## v1.0.0 (upcoming)
+## v0.0.1
 
- - refactor
+ - migrate from `choosefont.js`
+ - refactor everything
+ - rename package, re-versioning from 0.0.1

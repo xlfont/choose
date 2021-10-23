@@ -3,7 +3,10 @@
   "name": "@xlfont/choose",
   "license": "MIT",
   "description": "font chooser widget for building your website",
-  "version": "1.0.0",
+  "version": "0.0.1",
+  "files": [
+    "dist/**/*"
+  ],
   "homepage": "https://github.com/xlfont/choose",
   "repository": {
     "type": "git",
