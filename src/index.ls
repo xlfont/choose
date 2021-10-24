@@ -17,8 +17,9 @@ i18n =
   }
 
 xfc = (opt = {}) ->
-  @ <<< opt{meta-root, font-root}
+  @_url = opt{meta,link}
   @root = if typeof(opt.root) == \string => document.querySelector(opt.root) else opt.root
+  @_init-render = if opt.init-render? => opt.init-render else false
   @evt-handler = {}
   @i18n = opt.i18n or {t: -> it}
   @init = once ~> @_init!
@@ -33,10 +34,11 @@ xfc.prototype = Object.create(Object.prototype) <<< do
     if font.xfont => return Promise.resolve that
     s = @meta.index.style[font.s]
     w = @meta.index.weight[font.w]
-    path = "#{@font-root}/#{family.n}/#{s}/#{w}#{if font.x => '' else '.ttf'}"
+    path = "#{@_url.links}/#{family.n}/#{s}/#{w}#{if font.x => '' else '.ttf'}"
     xfl.load {path, name: family.n}
       .then -> return font.xfont = it
 
+  render: -> @view.render!
   _init: ->
     p = new Promise (res, rej) ~>
       xhr = new XMLHttpRequest!
@@ -48,7 +50,7 @@ xfc.prototype = Object.create(Object.prototype) <<< do
         catch e
           return rej e
         res!
-      xhr.open \GET, ("#{@meta-root}/meta.json")
+      xhr.open \GET, ("#{@_url.meta}/meta.json")
       xhr.onerror = -> return rej it
       xhr.send!
     p
@@ -61,6 +63,7 @@ xfc.prototype = Object.create(Object.prototype) <<< do
             n.textContent = @i18n.t("@plotdb/choose:#{n.textContent}")
 
         @view = new ldview do
+          init-render: @_init-render
           root: @root
           action: click:
             cancel: ~> @fire \choose, null
@@ -92,6 +95,7 @@ xfc.prototype = Object.create(Object.prototype) <<< do
               node.style.gridTemplateColumns = "repeat(auto-fill,#{w}px)"
             font:
               list: ~> @meta.family
+              host: if vscroll? => vscroll.fixed
               key: ~> it.n
               action: click: ({node, data, idx}) ~>
                 @fire \load.start
@@ -107,7 +111,6 @@ xfc.prototype = Object.create(Object.prototype) <<< do
                   !(!c or c == \all or (idx.category.indexOf(c) == data.c)) or
                   !(!s or s == \all or (idx.subset.indexOf(s) in data.s))
                 )
-
               init: ({node, data, idx}) ~>
                 col = idx % @meta.dim.col
                 row = Math.floor(idx / @meta.dim.col)
@@ -118,7 +121,7 @@ xfc.prototype = Object.create(Object.prototype) <<< do
                 node.style <<< do
                   width: "#{w}px"
                   height: "#{h}px"
-                  backgroundImage: "url(#{@meta-root}/sprite.min.png)"
+                  backgroundImage: "url(#{@_url.meta}/sprite.min.png)"
                   backgroundPosition: "#{-(w + p) * col}px #{-(h + p) * row}px"
                 n.textContent = data.n
 

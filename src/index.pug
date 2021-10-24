@@ -26,6 +26,6 @@ mixin xfc
       .ml-2
         .text-muted(style="font-size:12px") &nbsp;
         .btn.btn-sm.btn-outline-secondary(t,ld="cancel") Cancel
-    .xfc-content(style="overflow-y:scroll;overscroll-behavior:contain;"): .my-4(ld="font-list",style="display:grid;grid-template-columns:repeat(auto-fill,250px);grid-gap:1em;justify-content:space-around")
+    .xfc-content.flex-grow-1(style="overflow-y:hidden"): .h-100(ld="font-list",style="display:grid;grid-template-columns:repeat(auto-fill,250px);grid-gap:1em;justify-content:space-around;overscroll-behavior:contain;overflow-y:scroll")
       .xfc-font(ld-each="font"): .inner(ld="name")
     block

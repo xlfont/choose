@@ -42,11 +42,14 @@
   xfc = function(opt){
     var this$ = this;
     opt == null && (opt = {});
-    this.metaRoot = opt.metaRoot;
-    this.fontRoot = opt.fontRoot;
+    this._url = {
+      meta: opt.meta,
+      link: opt.link
+    };
     this.root = typeof opt.root === 'string'
       ? document.querySelector(opt.root)
       : opt.root;
+    this._initRender = opt.initRender != null ? opt.initRender : false;
     this.evtHandler = {};
     this.i18n = opt.i18n || {
       t: function(it){
@@ -90,13 +93,16 @@
       }
       s = this.meta.index.style[font.s];
       w = this.meta.index.weight[font.w];
-      path = this.fontRoot + "/" + family.n + "/" + s + "/" + w + (font.x ? '' : '.ttf');
+      path = this._url.links + "/" + family.n + "/" + s + "/" + w + (font.x ? '' : '.ttf');
       return xfl.load({
         path: path,
         name: family.n
       }).then(function(it){
         return font.xfont = it;
       });
+    },
+    render: function(){
+      return this.view.render();
     },
     _init: function(){
       var p, this$ = this;
@@ -119,7 +125,7 @@
           }
           return res();
         });
-        xhr.open('GET', this$.metaRoot + "/meta.json");
+        xhr.open('GET', this$._url.meta + "/meta.json");
         xhr.onerror = function(it){
           return rej(it);
         };
@@ -138,6 +144,7 @@
           });
         }
         return this$.view = new ldview({
+          initRender: this$._initRender,
           root: this$.root,
           action: {
             click: {
@@ -207,6 +214,7 @@
               list: function(){
                 return this$.meta.family;
               },
+              host: typeof vscroll != 'undefined' && vscroll !== null ? vscroll.fixed : void 8,
               key: function(it){
                 return it.n;
               },
@@ -243,7 +251,7 @@
                 import$(node.style, {
                   width: w + "px",
                   height: h + "px",
-                  backgroundImage: "url(" + this$.metaRoot + "/sprite.min.png)",
+                  backgroundImage: "url(" + this$._url.meta + "/sprite.min.png)",
                   backgroundPosition: -(w + p) * col + "px " + -(h + p) * row + "px"
                 });
                 return n.textContent = data.n;
