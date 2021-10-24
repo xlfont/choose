@@ -1,5 +1,11 @@
 # Change Logs
 
+## v0.0.5
+
+ - use sample text in METADATA.pb to render
+ - add some additional sample text for code plane
+
+
 ## v0.0.4
 
  - use sharp to generate png files
