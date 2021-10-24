@@ -3,7 +3,7 @@
   "name": "@xlfont/choose",
   "license": "MIT",
   "description": "font chooser widget for building your website",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "files": [
     "dist/**/*"
   ],
