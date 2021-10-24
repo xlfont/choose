@@ -178,6 +178,7 @@ for family in families =>
     [a, b] = [a, b].map (d) ->
       (if index.style[d.s] == \normal => 0 else 100) + (Math.abs(+index.weight[d.w] - 400) / 10)
     return a - b
+  if !paths.0 => continue
   render-fonts.push {
     name: (family.d or family.n)
     path: if paths.0.x => path.join(paths.0.p, "all.ttf") else paths.0.p

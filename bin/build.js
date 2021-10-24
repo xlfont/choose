@@ -266,6 +266,9 @@
       delete f.src;
     }
     paths.sort(fn4$);
+    if (!paths[0]) {
+      continue;
+    }
     renderFonts.push({
       name: family.d || family.n,
       path: paths[0].x

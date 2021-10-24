@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.0.7
+
+ - check path[0] for existency before pushing
+
+
 ## v0.0.6
 
  - add missing files in previous release
