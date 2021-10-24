@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 (function(){
-  var fs, fsExtra, path, jsYaml, yargs, opentype, progress, colors, svg2png, pngquant, sampleTexts, argv, dim, root, families, index, parsePb, parseYaml, recurse, k, v, i$, len$, family, j$, ref$, len1$, f, output, renderFonts, paths, desPath, desFile, e, getText, renderFont, renderAll;
+  var fs, fsExtra, path, jsYaml, yargs, opentype, progress, colors, svg2png, sharp, pngquant, sampleTexts, argv, dim, root, families, index, parsePb, parseYaml, recurse, k, v, i$, len$, family, j$, ref$, len1$, f, output, renderFonts, paths, desPath, desFile, e, getText, renderFont, renderAll;
   fs = require('fs');
   fsExtra = require('fs-extra');
   path = require('path');
@@ -10,6 +10,7 @@
   progress = require('progress');
   colors = require('colors');
   svg2png = require('svg2png');
+  sharp = require('sharp');
   pngquant = require('pngquant');
   sampleTexts = {
     "bengali": "নমুনা পাঠ",
@@ -362,16 +363,36 @@
   console.log("   generate sprite svg...".cyan);
   renderAll().then(function(svg){
     console.log("   generate sprite png file...".cyan);
-    return svg2png(Buffer.from(svg));
-  }).then(function(buf){
+    return new Promise(function(res, rej){
+      return sharp(Buffer.from(svg)).png().toFile(path.join(root.meta, 'sprite.png'), function(e){
+        if (e) {
+          return rej(e);
+        } else {
+          return res();
+        }
+      });
+    });
+  }).then(function(){
+    console.log("   optimize sprite png file...".cyan);
     return new Promise(function(res, rej){
       var pq, ret;
-      fs.writeFileSync(path.join(root.meta, 'sprite.png'), buf);
       pq = new pngquant([8, '--quality', '30-40']);
-      console.log("   optimize sprite png file...".cyan);
       ret = fs.createReadStream(path.join(root.meta, 'sprite.png')).pipe(pq).pipe(fs.createWriteStream(path.join(root.meta, 'sprite.min.png')));
       return ret.on('finish', function(){
         return res();
+      });
+    });
+  }).then(function(){
+    console.log("   generate sprite webp file...".cyan);
+    return new Promise(function(res, rej){
+      return sharp(path.join(root.meta, 'sprite.min.png')).webp({
+        quality: 80
+      }).toFile(path.join(root.meta, 'sprite.webp'), function(e){
+        if (e) {
+          return rej(e);
+        } else {
+          return res();
+        }
       });
     });
   }).then(function(){

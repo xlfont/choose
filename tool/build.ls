@@ -1,4 +1,4 @@
-require! <[fs fs-extra path js-yaml yargs @plotdb/opentype.js progress colors svg2png pngquant]>
+require! <[fs fs-extra path js-yaml yargs @plotdb/opentype.js progress colors svg2png sharp pngquant]>
 
 sample-texts =
   "bengali": "নমুনা পাঠ"
@@ -90,7 +90,7 @@ parse-pb = (root, file) ->
         if k == \name => family[k.0] = v
         else if k == \category => family.c = v
         else if k == \subset => family[][k.0].push v
-    else 
+    else
       # simply ignored.
       # we may need to handle this for more complicated font format, such as variable fonts.
       # console.log "parse error", line
@@ -243,17 +243,30 @@ render-all = -> new Promise (res, rej) ->
 
 console.log "   generate sprite svg...".cyan
 render-all!
-  .then (svg) -> 
-    #fs.write-file-sync path.join(root.meta, 'sprite.svg'), svg
+  .then (svg) ->
+    # write svg file ( may be quite huge ) if necessary
+    # fs.write-file-sync path.join(root.meta, 'sprite.svg'), svg
     console.log "   generate sprite png file...".cyan
-    svg2png Buffer.from(svg)
-  .then (buf) ->
-    new Promise (res, rej) ->
-      fs.write-file-sync path.join(root.meta, 'sprite.png'), buf
-      pq = new pngquant [8, '--quality', '30-40']
-      console.log "   optimize sprite png file...".cyan
-      ret = fs.createReadStream path.join(root.meta, 'sprite.png')
-        .pipe pq
-        .pipe fs.createWriteStream(path.join(root.meta, 'sprite.min.png'))
-      ret.on \finish, -> return res!
-  .then -> console.log "   done.".green
+    # alernatively, use svg2png.
+    # however, somewhat svg2png ( with phantomjs ) doesn't work in debian linux
+    #svg2png Buffer.from(svg)
+    #  .then (buf) -> fs.write-file-sync path.join(root.meta, 'sprite.png'), buf
+    (res, rej) <- new Promise _
+    sharp(Buffer.from(svg))
+      .png!toFile(path.join(root.meta, 'sprite.png'), (e) -> if e => rej(e) else res!)
+  .then ->
+    console.log "   optimize sprite png file...".cyan
+    (res, rej) <- new Promise _
+    pq = new pngquant [8, '--quality', '30-40']
+    ret = fs.createReadStream path.join(root.meta, 'sprite.png')
+      .pipe pq
+      .pipe fs.createWriteStream(path.join(root.meta, 'sprite.min.png'))
+    ret.on \finish, -> return res!
+  .then ->
+    console.log "   generate sprite webp file...".cyan
+    (res, rej) <- new Promise _
+    sharp(path.join(root.meta, 'sprite.min.png'))
+      .webp({quality: 80})
+      .toFile(path.join(root.meta, 'sprite.webp'), (e) -> if e => rej(e) else res!)
+  .then ->
+    console.log "   done.".green
