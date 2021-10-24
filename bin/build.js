@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 (function(){
-  var fs, fsExtra, path, jsYaml, yargs, opentype, progress, colors, svg2png, sharp, pngquant, sampleTexts, argv, dim, root, families, index, parsePb, parseYaml, recurse, k, v, i$, len$, family, j$, ref$, len1$, f, output, renderFonts, paths, desPath, desFile, e, getText, renderFont, renderAll;
+  var fs, fsExtra, path, jsYaml, yargs, opentype, progress, colors, svg2png, sharp, pngquant, lib, sampleTexts, argv, dim, root, families, index, unicodeRanges, parsePb, parseYaml, recurse, k, v, i$, len$, family, j$, ref$, len1$, f, output, renderFonts, paths, desPath, desFile, e, getText, renderFont, renderAll;
   fs = require('fs');
   fsExtra = require('fs-extra');
   path = require('path');
@@ -12,9 +12,15 @@
   svg2png = require('svg2png');
   sharp = require('sharp');
   pngquant = require('pngquant');
+  lib = path.dirname(fs.realpathSync(__filename));
   sampleTexts = {
     "bengali": "নমুনা পাঠ",
-    "khmer": "អត្ថបទគំរូ"
+    "khmer": "អត្ថបទគំរូ",
+    "adlam": "𞤁𞤢𞤲𞤣𞤢𞤴𞤯𞤫 𞤂𞤫𞤻𞤮𞤤",
+    "arabic": "الْأَبْجَدِيَّة الْعَرَبِيَّة",
+    "hebrew": "אָלֶף־בֵּית עִבְרִי",
+    "anatolian-hieroglyphs": "𔐀𔐁𔐂𔐃𔐄𔐅𔐆𔐇",
+    "armenian": "Հայոց գրեր"
   };
   argv = yargs.usage("usage: npx xfc font-dir [-o meta-output-dir] [-l link-output-dir] [-w sample-image-width] [-h sample-image-height] [-f font-size]").option('link', {
     alias: 'l',
@@ -71,6 +77,12 @@
     subset: [],
     weight: []
   };
+  unicodeRanges = JSON.parse(fs.readFileSync(path.join(lib, "data", "unicode-ranges.json")).toString()).filter(function(it){
+    return it && it[0];
+  });
+  unicodeRanges.map(function(it){
+    return it[2] = it[2].toLowerCase();
+  });
   parsePb = function(root, file){
     var data, ref$, fonts, font, family, i$, len$, line, that, k, v, key$;
     data = fs.readFileSync(file).toString().split('\n').filter(function(it){
@@ -122,6 +134,8 @@
             family.c = v;
           } else if (k === 'subset') {
             (family[key$ = k[0]] || (family[key$] = [])).push(v);
+          } else if (k === 'value' && !sampleTexts[family.n]) {
+            sampleTexts[family.n] = v;
           }
         }
       } else {}
@@ -262,7 +276,7 @@
   }
   fs.writeFileSync(path.join(root.meta, 'meta.json'), JSON.stringify(output));
   getText = function(font, text, meta){
-    var codes, unicodes, k, v, ref$;
+    var codes, unicodes, k, v, ref$, that, range, i$, to$, i, idx, ref1$, res$;
     meta == null && (meta = {});
     codes = text.split('').map(function(it){
       return it.charCodeAt(0);
@@ -288,19 +302,43 @@
     if (codes.filter(function(it){
       return ~unicodes.indexOf(it);
     }).length < codes.length) {
-      unicodes = unicodes.filter(function(it){
-        return (it > 64 && it <= 89) || (it >= 97 && it <= 122) || it > 256;
-      });
-      text = unicodes.filter(function(it){
-        return it !== 894;
-      }).slice(0, 8).map(function(it){
-        return String.fromCharCode(it);
-      }).join('');
+      text = "";
       for (k in ref$ = sampleTexts) {
         v = ref$[k];
         if (in$(k, meta.subset)) {
           text = v;
         }
+      }
+      if (!text) {
+        if (that = sampleTexts[meta.name]) {
+          text = that.substring(0, 16);
+        }
+      }
+      if (!text) {
+        range = unicodeRanges.filter(function(it){
+          return it[2] !== 'menu' && in$(it[2], meta.subset);
+        })[0];
+        if (range) {
+          for (i$ = range[0], to$ = range[0] + 8; i$ < to$; ++i$) {
+            i = i$;
+            text += String.fromCharCode(i);
+          }
+        }
+      }
+      if (!text) {
+        unicodes = unicodes.filter(function(it){
+          return (it > 64 && it <= 89) || (it >= 97 && it <= 122) || it > 256;
+        });
+        idx = (ref$ = Math.floor(unicodes.length / 2) + 4) < (ref1$ = unicodes.length) ? ref$ : ref1$;
+        res$ = [];
+        for (i$ = (ref$ = idx - 8) > 0 ? ref$ : 0; i$ < idx; ++i$) {
+          i = i$;
+          res$.push(unicodes[i]);
+        }
+        unicodes = res$;
+        text = unicodes.map(function(it){
+          return String.fromCharCode(it);
+        }).join('');
       }
     }
     return text;

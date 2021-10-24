@@ -1,8 +1,15 @@
 require! <[fs fs-extra path js-yaml yargs @plotdb/opentype.js progress colors svg2png sharp pngquant]>
 
+lib = path.dirname fs.realpathSync __filename
+
 sample-texts =
   "bengali": "নমুনা পাঠ"
   "khmer": "អត្ថបទគំរូ"
+  "adlam": "𞤁𞤢𞤲𞤣𞤢𞤴𞤯𞤫 𞤂𞤫𞤻𞤮𞤤"
+  "arabic": "الْأَبْجَدِيَّة الْعَرَبِيَّة"
+  "hebrew": "אָלֶף־בֵּית עִבְרִי"
+  "anatolian-hieroglyphs": "𔐀𔐁𔐂𔐃𔐄𔐅𔐆𔐇"
+  "armenian": "Հայոց գրեր"
 
 # sample command:
 # lsc build.ls -- ../../cdn/files/ -l links -o meta-sample/ -w 190 -s 18 -f 28 -p 2
@@ -60,7 +67,9 @@ fs-extra.ensure-dir-sync root.meta
 
 families = []
 index = category: [], style: [], subset: [], weight: []
-
+unicode-ranges = JSON.parse(fs.read-file-sync path.join(lib, "data", "unicode-ranges.json") .toString!)
+  .filter -> it and it.0
+unicode-ranges.map -> it.2 = it.2.toLowerCase!
 
 parse-pb = (root, file) ->
   data = fs.read-file-sync file .toString!split '\n' .filter -> it
@@ -90,6 +99,8 @@ parse-pb = (root, file) ->
         if k == \name => family[k.0] = v
         else if k == \category => family.c = v
         else if k == \subset => family[][k.0].push v
+        # this is incorrect, but fast to implement.
+        else if k == \value and !sample-texts[family.n] => sample-texts[family.n] = v
     else
       # simply ignored.
       # we may need to handle this for more complicated font format, such as variable fonts.
@@ -184,13 +195,20 @@ get-text = (font, text, meta = {}) ->
   unicodes = Array.from(new Set(unicodes))
   unicodes.sort (a,b) -> a - b
   if codes.filter(-> ~unicodes.indexOf(it)).length < codes.length =>
-    unicodes = unicodes.filter -> (it > 64 and it <= 89) or (it >= 97 and it <= 122) or it > 256
-    text = unicodes
-      .filter -> it != 894 # filter ';'
-      .slice 0, 8
-      .map(-> String.fromCharCode(it))
-      .join('')
+    text = ""
     for k,v of sample-texts => if k in meta.subset => text = v
+    if !text =>
+      if sample-texts[meta.name] => text = (that).substring(0, 16)
+    if !text =>
+      range = unicode-ranges.filter(-> (it.2 != 'menu' and it.2 in meta.subset)).0
+      if range => for i from range.0 til (range.0 + 8) => text += String.fromCharCode(i)
+    if !text =>
+      unicodes = unicodes.filter -> (it > 64 and it <= 89) or (it >= 97 and it <= 122) or it > 256
+      idx = (Math.floor(unicodes.length / 2) + 4) <? unicodes.length
+      unicodes = [unicodes[i] for i from ((idx - 8) >? 0) til idx]
+      text = unicodes
+        .map(-> String.fromCharCode(it))
+        .join('')
   return text
 
 render-font = (meta, row = 0, col = 0) ->
