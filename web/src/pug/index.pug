@@ -1,4 +1,4 @@
-doctype html
+doctype 
 html
   include @/bootstrap.ldui/dist/index.pug
   head
@@ -41,7 +41,7 @@ html
     hr
     .row
       .col-sm-3
-        .btn.btn-outline-dark.btn-lg.mb-2.btn-block(onclick="ldcv.toggle(true);") Choose in Dialog ...
+        .btn.btn-outline-dark.btn-lg.mb-2.btn-block(ld="choose") Choose in Dialog ...
         //-
           .dropdown.mb-2
             .btn.btn-outline-dark.dropdown-toggle.btn-lg.btn-block(data-toggle="dropdown") Choose via Dropdown
@@ -153,7 +153,7 @@ html
     +script("assets/lib/ldcover/main/ldcv.min.js")
     +script("assets/lib/clusterize.js/main/clusterize.min.js")
     +script("assets/lib/@xlfont/load/main/xfl.js")
-    +script("assets/lib/ldview/main/index.js")
+    +script("assets/lib/ldview/main/index.min.js")
+    +script("assets/lib/@loadingio/vscroll/main/index.min.js")
     +script("assets/lib/@xlfont/choose/dev/index.min.js")
-    //-script(src="assets/ldf.js")
     +script("js/index.js")
