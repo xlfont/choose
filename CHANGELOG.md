@@ -1,5 +1,11 @@
 # Change Logs
 
+## v0.0.4
+
+ - use sharp to generate png files
+ - also generate webp file ( note webp has dimension limitation )
+
+
 ## v0.0.3
 
  - tweak constructor option naming
