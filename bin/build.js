@@ -89,7 +89,9 @@
         }
         font = {};
       } else if (/^}/.exec(line)) {
-        fonts.push(font);
+        if (font) {
+          fonts.push(font);
+        }
         font = null;
       } else if (that = /^\s*(\S+)\s*:\s*(.+)/.exec(line)) {
         ref$ = [that[1].trim(), that[2].trim()], k = ref$[0], v = ref$[1];
@@ -121,9 +123,7 @@
             (family[key$ = k[0]] || (family[key$] = [])).push(v);
           }
         }
-      } else {
-        console.log("parse error", line);
-      }
+      } else {}
     }
     return family;
   };

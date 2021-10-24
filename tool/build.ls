@@ -72,7 +72,7 @@ parse-pb = (root, file) ->
       if font => fonts.push font
       font = {}
     else if /^}/.exec(line) =>
-      fonts.push font
+      if font => fonts.push font
       font = null
     else if /^\s*(\S+)\s*:\s*(.+)/.exec(line) =>
       [k, v] = [that.1.trim!, that.2.trim!]
@@ -91,7 +91,9 @@ parse-pb = (root, file) ->
         else if k == \category => family.c = v
         else if k == \subset => family[][k.0].push v
     else 
-      console.log "parse error", line
+      # simply ignored.
+      # we may need to handle this for more complicated font format, such as variable fonts.
+      # console.log "parse error", line
   return family
 
 parse-yaml = (root, file) ->
