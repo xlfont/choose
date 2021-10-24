@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.0.6
+
+ - add missing files in previous release
+
+
 ## v0.0.5
 
  - use sample text in METADATA.pb to render
