@@ -101,10 +101,13 @@ parse-pb = (root, file) ->
         else if k == \subset => family[][k.0].push v
         # this is incorrect, but fast to implement.
         else if k == \value and !sample-texts[family.n] => sample-texts[family.n] = v
+        else if k == \license => family.license = v
     else
       # simply ignored.
       # we may need to handle this for more complicated font format, such as variable fonts.
       # console.log "parse error", line
+  if family.license != \OFL => return null
+  delete family.license
   return family
 
 parse-yaml = (root, file) ->

@@ -1,5 +1,11 @@
 # Change Logs
 
+## v0.0.8
+
+ - remove fonts that isn't open licensed.
+   - this should be designed as configurable in future release
+
+
 ## v0.0.7
 
  - check path[0] for existency before pushing

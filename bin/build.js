@@ -136,10 +136,16 @@
             (family[key$ = k[0]] || (family[key$] = [])).push(v);
           } else if (k === 'value' && !sampleTexts[family.n]) {
             sampleTexts[family.n] = v;
+          } else if (k === 'license') {
+            family.license = v;
           }
         }
       } else {}
     }
+    if (family.license !== 'OFL') {
+      return null;
+    }
+    delete family.license;
     return family;
   };
   parseYaml = function(root, file){
