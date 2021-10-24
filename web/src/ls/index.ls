@@ -18,9 +18,6 @@ i18next.init supportedLng: <[en zh-TW]>, fallbackLng: \zh-TW
       root: document.body
       action: click: choose: ~> ldcv.toggle!
 
-
-
-
     modal-chooser.init!
     @ldcv = ldcv = new ldcover root: '.ldcv'
     @ldcv.on \toggle.on, -> modal-chooser.render!
