@@ -1,5 +1,12 @@
 # Change Logs
 
+## v0.0.9
+
+ - support config file
+ - support ignores option in config file mode
+ - add sample config and test fonts in `tool/sample`
+
+
 ## v0.0.8
 
  - remove fonts that isn't open licensed.
