@@ -1,8 +1,11 @@
 # Change Logs
 
-## v0.0.10 (upcoming)
+## v0.0.10
 
  - fix constructor option typo
+ - convert index values to lower case
+ - upgrade vscroll for better scrolling experience
+ - use xlfont.maketext.io as font repo
 
 
 ## v0.0.9

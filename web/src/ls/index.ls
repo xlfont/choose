@@ -2,6 +2,7 @@
 
 textarea = document.querySelector \#demo-textarea
 base = "assets/fonts" #"https://xlfont.github.io/sample-set"
+base = "https://xlfont.maketext.io"
 
 i18next.init supportedLng: <[en zh-TW]>, fallbackLng: \zh-TW
   .then ~>

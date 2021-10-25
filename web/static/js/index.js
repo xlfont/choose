@@ -4,6 +4,7 @@
   var textarea, base, this$ = this;
   textarea = document.querySelector('#demo-textarea');
   base = "assets/fonts";
+  base = "https://xlfont.maketext.io";
   return i18next.init({
     supportedLng: ['en', 'zh-TW'],
     fallbackLng: 'zh-TW'

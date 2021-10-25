@@ -268,8 +268,9 @@
   }
   for (k in index) {
     v = index[k];
-    index[k] = Array.from(new Set(index[k].filter(fn3$)));
-    index[k] = index[k].sort(fn4$);
+    index[k] = index[k].map(fn3$);
+    index[k] = Array.from(new Set(index[k].filter(fn4$)));
+    index[k] = index[k].sort(fn5$);
   }
   for (i$ = 0, len$ = families.length; i$ < len$; ++i$) {
     family = families[i$];
@@ -278,12 +279,8 @@
       f.s = index.style.indexOf(f.s);
       f.w = index.weight.indexOf(f.w);
     }
-    family.s = (family.s || (family.s = [])).map(fn5$);
+    family.s = (family.s || (family.s = [])).map(fn6$);
     family.c = index.category.indexOf(family.c);
-  }
-  for (k in index) {
-    v = index[k];
-    index[k] = index[k].map(fn6$);
   }
   output = {
     family: families,
@@ -518,9 +515,12 @@
     }
   }
   function fn3$(it){
+    return it.toLowerCase().replace(/sans_serif/, 'sans serif');
+  }
+  function fn4$(it){
     return it;
   }
-  function fn4$(a, b){
+  function fn5$(a, b){
     if (a > b) {
       return 1;
     } else if (a < b) {
@@ -529,11 +529,8 @@
       return 0;
     }
   }
-  function fn5$(it){
-    return index.subset.indexOf(it);
-  }
   function fn6$(it){
-    return it.toLowerCase().replace(/sans_serif/, 'sans serif');
+    return index.subset.indexOf(it);
   }
   function fn7$(a, b){
     var ref$, v1, v2;

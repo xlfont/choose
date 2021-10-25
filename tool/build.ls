@@ -188,6 +188,7 @@ for family in families =>
     if f.w => index.weight.push f.w
 
 for k,v of index =>
+  index[k] = index[k].map -> it.toLowerCase!replace /sans_serif/, 'sans serif'
   index[k] = Array.from(new Set(index[k].filter(-> it)))
   index[k] = index[k].sort (a,b) -> if a > b => 1 else if a < b => -1 else 0
 
@@ -197,9 +198,6 @@ for family in families =>
     f.w = index.weight.indexOf(f.w)
   family.s = family.[]s.map -> index.subset.indexOf(it)
   family.c = index.category.indexOf(family.c)
-
-for k,v of index =>
-  index[k] = index[k].map -> it.toLowerCase!replace /sans_serif/, 'sans serif'
 
 output = {family: families, index, dim}
 
