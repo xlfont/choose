@@ -1,0 +1,11 @@
+{
+  "width": 180,
+  "height": 40,
+  "col": 5,
+  "padding": 10,
+  "fsize": 32,
+  "links": "tool/sample/links",
+  "meta": "tool/sample/meta",
+  "src": "tool/sample/files",
+  "ignores": ["^lat.*$"]
+}

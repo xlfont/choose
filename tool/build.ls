@@ -16,6 +16,10 @@ sample-texts =
 
 argv = yargs
   .usage "usage: npx xfc font-dir [-o meta-output-dir] [-l link-output-dir] [-w sample-image-width] [-h sample-image-height] [-f font-size]"
+  .option \config, do
+    alias: \c
+    description: "config file"
+    type: \string
   .option \link, do
     alias: \l
     description: "link output directory. default `./output/links/`"
@@ -46,9 +50,23 @@ argv = yargs
     type: \number
   .help \help
   .check (argv, options) ->
-    if !argv._.0 => throw new Error("missing font dir")
+    if !argv.c and !argv._.0 => throw new Error("missing font dir")
     return true
   .argv
+
+ignores = []
+if argv.c =>
+  config = JSON.parse(fs.read-file-sync argv.c .toString!)
+  argv = do
+    w: config.width
+    h: config.height
+    c: config.col
+    p: config.padding
+    f: config.fsize
+    l: config.links
+    o: config.meta
+    _: [config.src]
+  ignores = (config.ignores or []).map -> new RegExp it, 'i'
 
 dim =
   width: argv.w or 400
@@ -89,9 +107,11 @@ parse-pb = (root, file) ->
       if k == \category => v = (v or 'sans serif').replace(/_/g,' ')
       # Google use `subsets`. but we internally use `subset` to prevent confusion.
       if k == \subsets => k = \subset
+      /*
       if Array.isArray(index[k]) =>
         v = (v or '').toLowerCase!trim!
         index[k].push v
+      */
       if font =>
         if k in <[style weight]> => font[k.0] = v
         else if k == \filename => font.src = path.join(root, v)
@@ -120,12 +140,12 @@ parse-yaml = (root, file) ->
     # but anyway we internally use `subset` to prevent unnecessary confusion.
     if d.subsets =>
       family.s = d.subsets.filter(->it).map -> it.toLowerCase!trim!
-      index.subset ++= family.s
+      #index.subset ++= family.s
     for k,v of d.style =>
-      index.style.push k
+      #index.style.push k
       for f in v =>
         w = "#{(f.weight or 400)}"
-        index.weight.push w
+        #index.weight.push w
         font = {s: k, w: w, src: path.join(root, f.filename)}
         if f.xfl => font.x = true
         family.fonts.push font
@@ -145,6 +165,28 @@ recurse = (root) ->
     if Array.isArray(family) => families ++= family else if family => families.push family
 
 recurse root.files
+
+for family in families =>
+  same = families.filter(->it.n == family.n)
+  if same.length > 1 =>
+    same.sort (a,b) ->
+      xa = a.fonts.filter(-> it.x).length
+      xb = b.fonts.filter(-> it.x).length
+      if xa > xb => -1
+      else if xa < xb => 1
+      else 0
+    same.map (d,i) -> if i => d.deleted = true
+
+families = families.filter (f) ->
+  return ignores.filter(-> it.exec(f.n)).length == 0 and !f.deleted
+
+for family in families =>
+  if family.c => index.category.push family.c
+  index.subset ++= family.s or []
+  for f in (family.fonts or []) =>
+    if f.s => index.style.push f.s
+    if f.w => index.weight.push f.w
+
 for k,v of index =>
   index[k] = Array.from(new Set(index[k].filter(-> it)))
   index[k] = index[k].sort (a,b) -> if a > b => 1 else if a < b => -1 else 0

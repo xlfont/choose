@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 (function(){
-  var fs, fsExtra, path, jsYaml, yargs, opentype, progress, colors, svg2png, sharp, pngquant, lib, sampleTexts, argv, dim, root, families, index, unicodeRanges, parsePb, parseYaml, recurse, k, v, i$, len$, family, j$, ref$, len1$, f, output, renderFonts, paths, desPath, desFile, e, getText, renderFont, renderAll;
+  var fs, fsExtra, path, jsYaml, yargs, opentype, progress, colors, svg2png, sharp, pngquant, lib, sampleTexts, argv, ignores, config, dim, root, families, index, unicodeRanges, parsePb, parseYaml, recurse, i$, len$, family, same, j$, ref$, len1$, f, k, v, output, renderFonts, paths, desPath, desFile, e, getText, renderFont, renderAll;
   fs = require('fs');
   fsExtra = require('fs-extra');
   path = require('path');
@@ -22,7 +22,11 @@
     "anatolian-hieroglyphs": "𔐀𔐁𔐂𔐃𔐄𔐅𔐆𔐇",
     "armenian": "Հայոց գրեր"
   };
-  argv = yargs.usage("usage: npx xfc font-dir [-o meta-output-dir] [-l link-output-dir] [-w sample-image-width] [-h sample-image-height] [-f font-size]").option('link', {
+  argv = yargs.usage("usage: npx xfc font-dir [-o meta-output-dir] [-l link-output-dir] [-w sample-image-width] [-h sample-image-height] [-f font-size]").option('config', {
+    alias: 'c',
+    description: "config file",
+    type: 'string'
+  }).option('link', {
     alias: 'l',
     description: "link output directory. default `./output/links/`",
     type: 'string'
@@ -51,11 +55,28 @@
     description: "image padding. default 10",
     type: 'number'
   }).help('help').check(function(argv, options){
-    if (!argv._[0]) {
+    if (!argv.c && !argv._[0]) {
       throw new Error("missing font dir");
     }
     return true;
   }).argv;
+  ignores = [];
+  if (argv.c) {
+    config = JSON.parse(fs.readFileSync(argv.c).toString());
+    argv = {
+      w: config.width,
+      h: config.height,
+      c: config.col,
+      p: config.padding,
+      f: config.fsize,
+      l: config.links,
+      o: config.meta,
+      _: [config.src]
+    };
+    ignores = (config.ignores || []).map(function(it){
+      return new RegExp(it, 'i');
+    });
+  }
   dim = {
     width: argv.w || 400,
     height: argv.h || 50,
@@ -117,10 +138,11 @@
         if (k === 'subsets') {
           k = 'subset';
         }
-        if (Array.isArray(index[k])) {
-          v = (v || '').toLowerCase().trim();
-          index[k].push(v);
-        }
+        /*
+        if Array.isArray(index[k]) =>
+          v = (v or '').toLowerCase!trim!
+          index[k].push v
+        */
         if (font) {
           if (k === 'style' || k === 'weight') {
             font[k[0]] = v;
@@ -168,15 +190,12 @@
         }).map(function(it){
           return it.toLowerCase().trim();
         });
-        index.subset = index.subset.concat(family.s);
       }
       for (k in ref$ = d.style) {
         v = ref$[k];
-        index.style.push(k);
         for (i$ = 0, len$ = v.length; i$ < len$; ++i$) {
           f = v[i$];
           w = (f.weight || 400) + "";
-          index.weight.push(w);
           font = {
             s: k,
             w: w,
@@ -218,10 +237,39 @@
     return results$;
   };
   recurse(root.files);
+  for (i$ = 0, len$ = families.length; i$ < len$; ++i$) {
+    family = families[i$];
+    same = families.filter(fn$);
+    if (same.length > 1) {
+      same.sort(fn1$);
+      same.map(fn2$);
+    }
+  }
+  families = families.filter(function(f){
+    return ignores.filter(function(it){
+      return it.exec(f.n);
+    }).length === 0 && !f.deleted;
+  });
+  for (i$ = 0, len$ = families.length; i$ < len$; ++i$) {
+    family = families[i$];
+    if (family.c) {
+      index.category.push(family.c);
+    }
+    index.subset = index.subset.concat(family.s || []);
+    for (j$ = 0, len1$ = (ref$ = family.fonts || []).length; j$ < len1$; ++j$) {
+      f = ref$[j$];
+      if (f.s) {
+        index.style.push(f.s);
+      }
+      if (f.w) {
+        index.weight.push(f.w);
+      }
+    }
+  }
   for (k in index) {
     v = index[k];
-    index[k] = Array.from(new Set(index[k].filter(fn$)));
-    index[k] = index[k].sort(fn1$);
+    index[k] = Array.from(new Set(index[k].filter(fn3$)));
+    index[k] = index[k].sort(fn4$);
   }
   for (i$ = 0, len$ = families.length; i$ < len$; ++i$) {
     family = families[i$];
@@ -230,12 +278,12 @@
       f.s = index.style.indexOf(f.s);
       f.w = index.weight.indexOf(f.w);
     }
-    family.s = (family.s || (family.s = [])).map(fn2$);
+    family.s = (family.s || (family.s = [])).map(fn5$);
     family.c = index.category.indexOf(family.c);
   }
   for (k in index) {
     v = index[k];
-    index[k] = index[k].map(fn3$);
+    index[k] = index[k].map(fn6$);
   }
   output = {
     family: families,
@@ -271,7 +319,7 @@
       fs.symlinkSync(path.relative(desPath, f.src), desFile);
       delete f.src;
     }
-    paths.sort(fn4$);
+    paths.sort(fn7$);
     if (!paths[0]) {
       continue;
     }
@@ -280,7 +328,7 @@
       path: paths[0].x
         ? path.join(paths[0].p, "all.ttf")
         : paths[0].p,
-      subset: family.s.map(fn5$)
+      subset: family.s.map(fn8$)
     });
   }
   fs.writeFileSync(path.join(root.meta, 'meta.json'), JSON.stringify(output));
@@ -446,9 +494,33 @@
     return console.log("   done.".green);
   });
   function fn$(it){
-    return it;
+    return it.n === family.n;
   }
   function fn1$(a, b){
+    var xa, xb;
+    xa = a.fonts.filter(function(it){
+      return it.x;
+    }).length;
+    xb = b.fonts.filter(function(it){
+      return it.x;
+    }).length;
+    if (xa > xb) {
+      return -1;
+    } else if (xa < xb) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+  function fn2$(d, i){
+    if (i) {
+      return d.deleted = true;
+    }
+  }
+  function fn3$(it){
+    return it;
+  }
+  function fn4$(a, b){
     if (a > b) {
       return 1;
     } else if (a < b) {
@@ -457,13 +529,13 @@
       return 0;
     }
   }
-  function fn2$(it){
+  function fn5$(it){
     return index.subset.indexOf(it);
   }
-  function fn3$(it){
+  function fn6$(it){
     return it.toLowerCase().replace(/sans_serif/, 'sans serif');
   }
-  function fn4$(a, b){
+  function fn7$(a, b){
     var ref$, v1, v2;
     ref$ = [0, 0], v1 = ref$[0], v2 = ref$[1];
     ref$ = [a, b].map(function(d){
@@ -471,7 +543,7 @@
     }), a = ref$[0], b = ref$[1];
     return a - b;
   }
-  function fn5$(it){
+  function fn8$(it){
     return index.subset[it];
   }
   function in$(x, xs){
