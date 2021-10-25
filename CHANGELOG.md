@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.0.10 (upcoming)
+
+ - fix constructor option typo
+
+
 ## v0.0.9
 
  - support config file

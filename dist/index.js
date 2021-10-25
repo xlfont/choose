@@ -44,7 +44,7 @@
     opt == null && (opt = {});
     this._url = {
       meta: opt.meta,
-      link: opt.link
+      links: opt.links
     };
     this.root = typeof opt.root === 'string'
       ? document.querySelector(opt.root)

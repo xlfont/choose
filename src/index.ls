@@ -17,7 +17,7 @@ i18n =
   }
 
 xfc = (opt = {}) ->
-  @_url = opt{meta,link}
+  @_url = opt{meta,links}
   @root = if typeof(opt.root) == \string => document.querySelector(opt.root) else opt.root
   @_init-render = if opt.init-render? => opt.init-render else false
   @evt-handler = {}
