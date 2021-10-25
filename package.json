@@ -19,6 +19,7 @@
   },
   "scripts": {
     "start": "npx server -r web -o true",
+    "sample": "./bin/build.js -c tool/sample/config.json",
     "deploy": "npx deploy"
   },
   "bin": {
@@ -49,6 +50,7 @@
       "bootstrap.native",
       "@loadingio/ldquery",
       "@loadingio/vscroll",
+      "@plotdb/opentype.js",
       "@xlfont/load",
       "proxise",
       "ldcover",
