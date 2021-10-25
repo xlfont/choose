@@ -67,15 +67,30 @@ This command generates necessary files for `@xlfont/choose` to list your fonts. 
 
  - a minimized PNG for previewing fonts.
  - metadata for font information, including name, style and position in previewer PNG.
- - a directory structure recgonized by `@xlfont/choose`, with symbolic links to the fonts your provided. 
+ - a directory structure recgonized by `@xlfont/choose`, with symbolic links to the fonts your provided.
 
 Avilable options:
 
- - `--link`: output directory for symbolic links to font. default `./output/links`.
- - `--output`: output directory for metadata. default `./output/meta`.
- - `--font-size`: default font size. default 48, auto shrink if needed.
+ - `--link`: or `-l`, output directory for symbolic links to font. default `./output/links`.
+ - `--output`: or `-m`, output directory for metadata. default `./output/meta`.
+ - `--font-size`: or `-f`, default font size. default 48, auto shrink if needed.
 
 For a complete list of possible options, please run `npx xfc --help` directly.
+
+
+### Generate  with Configurations
+
+You can also generate metadata with a prepared configuration file with `--config` or `-c` option. Supported fields in this configuration file are as follow:
+
+ - `width`: default 400, width of font preview box
+ - `height`: default 50, height of font preview box
+ - `col`: default 5,
+ - `padding`: default 10,
+ - `fsize`: default 48,
+ - `links`: output directory for symboic links to font.
+ - `meta`: output directory for metadata.
+ - `src`: source directory for source fonts.
+ - `ignores`: a list of regular expressions for font names to exclude.
 
 
 ## LICENSE
