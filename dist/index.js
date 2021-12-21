@@ -107,12 +107,20 @@
       });
     },
     render: function(){
-      var this$ = this;
+      var _, this$ = this;
       this.ldld.on();
-      return setTimeout(function(){
+      _ = function(){
         this$.view.render();
-        return this$.ldld.off();
-      }, 0);
+        this$.ldld.off();
+        return this$._rendered = true;
+      };
+      if (this._rendered) {
+        return _();
+      } else {
+        return setTimeout(function(){
+          return _();
+        }, 50);
+      }
     },
     _init: function(){
       var p, this$ = this;

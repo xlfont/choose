@@ -41,11 +41,13 @@ xfc.prototype = Object.create(Object.prototype) <<< do
 
   render: ->
     @ldld.on!
-    # render may be a timing consuming job and thus may block UI.
-    setTimeout (~>
+    _ = ~>
       @view.render!
       @ldld.off!
-    ), 0
+      @_rendered = true
+    # render may be a timing consuming job and thus may block UI.
+    if @_rendered => _!
+    else setTimeout (-> _!), 50
   _init: ->
     p = new Promise (res, rej) ~>
       xhr = new XMLHttpRequest!
