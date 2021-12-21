@@ -39,7 +39,13 @@ xfc.prototype = Object.create(Object.prototype) <<< do
     xfl.load {path, name: family.n}
       .then -> return font.xfont = it
 
-  render: -> @view.render!
+  render: ->
+    @ldld.on!
+    # render may be a timing consuming job and thus may block UI.
+    setTimeout (~>
+      @view.render!
+      @ldld.off!
+    ), 0
   _init: ->
     p = new Promise (res, rej) ~>
       xhr = new XMLHttpRequest!

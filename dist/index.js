@@ -107,7 +107,12 @@
       });
     },
     render: function(){
-      return this.view.render();
+      var this$ = this;
+      this.ldld.on();
+      return setTimeout(function(){
+        this$.view.render();
+        return this$.ldld.off();
+      }, 0);
     },
     _init: function(){
       var p, this$ = this;

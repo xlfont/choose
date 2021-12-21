@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.0.12 (upcoming)
+
+ - show loading indicator when rendering the chooser ui
+
+
 ## v0.0.11
 
  - show loading indicator when font is choosed and loading
