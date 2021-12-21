@@ -1,6 +1,6 @@
 doctype 
 html
-  include @/bootstrap.ldui/dist/index.pug
+  include @/@loadingio/bootstrap.ext/dist/index.pug
   head
     meta(charset="utf-8")
     meta(property="og:locale",content="zh_TW")
@@ -17,9 +17,9 @@ html
     meta(name="keywords",content="webfont,font loader,cjk")
 
     +css("assets/lib/bootstrap/main/css/bootstrap.min.css")
-    +css("assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.css")
-    +css("assets/lib/ldcover/main/ldcv.min.css")
-    +css("assets/lib/clusterize.js/main/clusterize.css")
+    +css("assets/lib/@loadingio/bootstrap.ext/main/index.min.css")
+    +css("assets/lib/ldcover/main/index.min.css")
+    +css("assets/lib/ldloader/main/index.min.css")
     +css("css/index.css")
     +css("assets/lib/@xlfont/choose/dev/index.css")
 
@@ -147,12 +147,12 @@ html
 
     +script("assets/lib/i18next/main/umd/i18next.min.js")
     +script("assets/lib/bootstrap.native/main/bootstrap-native-v4.min.js")
-    +script("assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.js")
     +script("assets/lib/@loadingio/ldquery/main/ldq.min.js")
-    +script("assets/lib/proxise/main/proxise.min.js")
-    +script("assets/lib/ldcover/main/ldcv.min.js")
-    +script("assets/lib/clusterize.js/main/clusterize.min.js")
-    +script("assets/lib/@xlfont/load/main/xfl.js")
+    +script("assets/lib/@loadingio/debounce.js/main/debounce.min.js")
+    +script("assets/lib/proxise/main/index.min.js")
+    +script("assets/lib/ldcover/main/index.min.js")
+    +script("assets/lib/ldloader/main/index.min.js")
+    +script("assets/lib/@xlfont/load/main/index.js")
     +script("assets/lib/ldview/main/index.min.js")
     +script("assets/lib/@loadingio/vscroll/main/index.min.js")
     +script("assets/lib/@xlfont/choose/dev/index.min.js")

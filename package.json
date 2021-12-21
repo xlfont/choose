@@ -3,7 +3,7 @@
   "name": "@xlfont/choose",
   "license": "MIT",
   "description": "font chooser widget for building your website",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "files": [
     "dist/**/*",
     "bin/**/*"
@@ -26,19 +26,19 @@
     "xfc": "./bin/build.js"
   },
   "devDependencies": {
-    "@loadingio/ldquery": "^2.0.0",
     "bootstrap": "^4.5.3",
-    "bootstrap.ldui": "github:loadingio/bootstrap.ldui",
     "bootstrap.native": "^3.0.13",
-    "clusterize.js": "^0.18.1",
+    "@loadingio/bootstrap.ext": "^0.0.3",
+    "@loadingio/debounce.js": "^0.0.1",
+    "@loadingio/ldquery": "^2.2.1",
     "deploy": "github:zbryikt/deploy",
     "fedep": "^0.0.17",
     "i18next": "^19.9.2",
-    "ldcover": "^1.3.3",
-    "ldfile": "^1.0.0",
+    "ldcover": "^2.1.0",
+    "ldfile": "^1.0.1",
     "livescript": "^1.6.0",
-    "stylus": "^0.54.5",
-    "template": "github:zbryikt/template#v2.3.13",
+    "stylus": "^0.55.0",
+    "@zbryikt/template": "^2.3.32",
     "uglify-js": "=3.2.0",
     "uglifycss": "^0.0.29"
   },
@@ -46,9 +46,10 @@
     "root": "web/static/assets/lib",
     "modules": [
       "bootstrap",
-      "bootstrap.ldui",
       "bootstrap.native",
+      "@loadingio/bootstrap.ext",
       "@loadingio/ldquery",
+      "@loadingio/debounce.js",
       "@loadingio/vscroll",
       "@plotdb/opentype.js",
       "@xlfont/load",
@@ -56,25 +57,28 @@
       "ldcover",
       "ldfile",
       "ldview",
-      "i18next",
-      "clusterize.js"
+      "ldloader",
+      "i18next"
     ]
   },
   "peerDependencies": {
-    "clusterize.js": "^0.18.1",
-    "proxise": "^0.1.2"
+    "@loadingio/vscroll": "^0.0.6",
+    "ldloader": "^2.1.0",
+    "ldview": "^0.2.7",
+    "proxise": "^0.1.6"
   },
   "dependencies": {
-    "@loadingio/vscroll": "^0.0.3",
+    "@loadingio/vscroll": "^0.0.6",
     "@plotdb/opentype.js": "^1.3.4",
-    "@xlfont/load": "^1.0.9",
-    "colors": "=1.1.2",
+    "@xlfont/load": "^1.1.1",
+    "colors": "^1.1.2",
     "fs-extra": "^6.0.1",
     "js-yaml": "^3.14.1",
-    "ldview": "^0.2.6",
+    "ldloader": "^2.1.0",
+    "ldview": "^0.2.7",
     "pngquant": "^4.0.0",
     "progress": "^2.0.0",
-    "proxise": "^0.1.2",
+    "proxise": "^0.1.6",
     "sharp": "^0.29.2",
     "svg2png": "^4.1.1",
     "yargs": "^6.6.0"

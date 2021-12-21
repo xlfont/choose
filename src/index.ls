@@ -21,6 +21,7 @@ xfc = (opt = {}) ->
   @root = if typeof(opt.root) == \string => document.querySelector(opt.root) else opt.root
   @_init-render = if opt.init-render? => opt.init-render else false
   @evt-handler = {}
+  @ldld = new ldloader container: @root, auto-z: true, class-name: 'ldld full'
   @i18n = opt.i18n or {t: -> it}
   @init = once ~> @_init!
   @
@@ -98,9 +99,12 @@ xfc.prototype = Object.create(Object.prototype) <<< do
               host: if vscroll? => vscroll.fixed
               key: ~> it.n
               action: click: ({node, data, idx}) ~>
+                @ldld.on!
                 @fire \load.start
                 @load data
-                  .finally ~> @fire \load.end
+                  .finally ~>
+                    @fire \load.end
+                    @ldld.off!
                   .then ~> @fire \choose, it
                   .catch ~>
                     console.error "[@xlfont/choose] font load failed: ", it

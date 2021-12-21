@@ -51,6 +51,11 @@
       : opt.root;
     this._initRender = opt.initRender != null ? opt.initRender : false;
     this.evtHandler = {};
+    this.ldld = new ldloader({
+      container: this.root,
+      autoZ: true,
+      className: 'ldld full'
+    });
     this.i18n = opt.i18n || {
       t: function(it){
         return it;
@@ -222,9 +227,11 @@
                 click: function(arg$){
                   var node, data, idx;
                   node = arg$.node, data = arg$.data, idx = arg$.idx;
+                  this$.ldld.on();
                   this$.fire('load.start');
                   return this$.load(data)['finally'](function(){
-                    return this$.fire('load.end');
+                    this$.fire('load.end');
+                    return this$.ldld.off();
                   }).then(function(it){
                     return this$.fire('choose', it);
                   })['catch'](function(it){

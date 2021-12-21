@@ -1,5 +1,11 @@
 # Change Logs
 
+## v0.0.11
+
+ - show loading indicator when font is choosed and loading
+ - upgrade modules
+
+
 ## v0.0.10
 
  - fix constructor option typo
