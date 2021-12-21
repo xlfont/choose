@@ -51,6 +51,9 @@ Check `web/src/pug/index.pug` for example with `ldcover` and `@xlfont/choose`.
 ## Events
 
  - `choose`: fired when a font is chosen, with an xlfont object from `@xlfont/load` for the chosen font.
+ - `load.start`: fired when a font is loading. ( after user clicking a font )
+ - `load.end`: fired when a font is loaded. ( then `get` gets resolved. )
+ - `load.fail`: fired when a font is failed to load.
 
 
 ## Metadata Generation
