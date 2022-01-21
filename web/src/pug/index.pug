@@ -1,6 +1,6 @@
 doctype 
 html
-  include @/@loadingio/bootstrap.ext/dist/index.pug
+  include @/@loadingio/bootstrap.ext/index.pug
   head
     meta(charset="utf-8")
     meta(property="og:locale",content="zh_TW")
@@ -16,7 +16,7 @@ html
     meta(property="article:section",content="Taiwan")
     meta(name="keywords",content="webfont,font loader,cjk")
 
-    +css("assets/lib/bootstrap/main/css/bootstrap.min.css")
+    +css("assets/lib/bootstrap/main/dist/css/bootstrap.min.css")
     +css("assets/lib/@loadingio/bootstrap.ext/main/index.min.css")
     +css("assets/lib/ldcover/main/index.min.css")
     +css("assets/lib/ldloader/main/index.min.css")
@@ -145,10 +145,10 @@ html
     br
     br
 
-    +script("assets/lib/i18next/main/umd/i18next.min.js")
-    +script("assets/lib/bootstrap.native/main/bootstrap-native-v4.min.js")
-    +script("assets/lib/@loadingio/ldquery/main/ldq.min.js")
-    +script("assets/lib/@loadingio/debounce.js/main/debounce.min.js")
+    +script("assets/lib/i18next/main/dist/umd/i18next.min.js")
+    +script("assets/lib/bootstrap.native/main/dist/bootstrap-native-v4.min.js")
+    +script("assets/lib/@loadingio/ldquery/main/index.min.js")
+    +script("assets/lib/@loadingio/debounce.js/main/index.min.js")
     +script("assets/lib/proxise/main/index.min.js")
     +script("assets/lib/ldcover/main/index.min.js")
     +script("assets/lib/ldloader/main/index.min.js")
