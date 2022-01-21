@@ -23,6 +23,7 @@
   "scripts": {
     "start": "npx server -r web -o true",
     "sample": "./bin/build.js -c tool/sample/config.json",
+    "publish": "npx fedep publish -d true",
     "deploy": "npx deploy"
   },
   "bin": {
