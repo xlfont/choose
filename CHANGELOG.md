@@ -1,8 +1,14 @@
 # Change Logs
 
-## v0.0.12 (upcoming)
+## v0.0.12
 
  - show loading indicator when rendering the chooser ui
+ - add `style` in `package.json`
+ - add `main` and `browser` field in `package.json`.
+ - further minimize generated js file with mangling and compression
+ - upgrade modules
+ - patch test code to make it work with upgraded modules
+ - release with compact directory structure
 
 
 ## v0.0.11
