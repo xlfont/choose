@@ -35,7 +35,7 @@
     "@loadingio/debounce.js": "^1.0.1",
     "@loadingio/ldquery": "^3.0.1",
     "@zbryikt/deploy": "^0.0.1",
-    "fedep": "^1.1.1",
+    "fedep": "^1.1.2",
     "i18next": "^19.9.2",
     "ldcover": "^3.0.1",
     "ldfile": "^2.0.0",
