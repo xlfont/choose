@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 (function(){
-  var fs, fsExtra, path, jsYaml, yargs, opentype, progress, colors, svg2png, sharp, pngquant, lib, sampleTexts, argv, ignores, config, dim, root, families, index, unicodeRanges, parsePb, parseYaml, recurse, i$, len$, family, same, j$, ref$, len1$, f, k, v, output, renderFonts, paths, desPath, desFile, e, getText, renderFont, renderAll;
+  var fs, fsExtra, path, jsYaml, yargs, opentype, progress, colors, sharp, pngquant, lib, sampleTexts, argv, ignores, config, dim, root, families, index, unicodeRanges, parsePb, parseYaml, recurse, i$, len$, family, same, j$, ref$, len1$, f, k, v, output, renderFonts, paths, desPath, desFile, e, getText, renderFont, renderAll;
   fs = require('fs');
   fsExtra = require('fs-extra');
   path = require('path');
@@ -9,7 +9,6 @@
   opentype = require('@plotdb/opentype.js');
   progress = require('progress');
   colors = require('colors');
-  svg2png = require('svg2png');
   sharp = require('sharp');
   pngquant = require('pngquant');
   lib = path.dirname(fs.realpathSync(__filename));
