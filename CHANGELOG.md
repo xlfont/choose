@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.0.13 (upcoming)
+
+ - remove svg2png to fix vulnerability
+
+
 ## v0.0.12
 
  - show loading indicator when rendering the chooser ui

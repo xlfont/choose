@@ -1,4 +1,5 @@
-require! <[fs fs-extra path js-yaml yargs @plotdb/opentype.js progress colors svg2png sharp pngquant]>
+require! <[fs fs-extra path js-yaml yargs @plotdb/opentype.js progress colors sharp pngquant]>
+#require! <[svg2png]>
 
 lib = path.dirname fs.realpathSync __filename
 
@@ -309,7 +310,7 @@ render-all!
     # write svg file ( may be quite huge ) if necessary
     # fs.write-file-sync path.join(root.meta, 'sprite.svg'), svg
     console.log "   generate sprite png file...".cyan
-    # alernatively, use svg2png.
+    # alernatively, use svg2png. ( not in package.json, have to be installed manually )
     # however, somewhat svg2png ( with phantomjs ) doesn't work in debian linux
     #svg2png Buffer.from(svg)
     #  .then (buf) -> fs.write-file-sync path.join(root.meta, 'sprite.png'), buf
