@@ -51,11 +51,13 @@
       : opt.root;
     this._initRender = opt.initRender != null ? opt.initRender : false;
     this.evtHandler = {};
-    this.ldld = new ldloader({
-      container: this.root,
-      autoZ: true,
-      className: 'ldld full'
-    });
+    if (this.root) {
+      this.ldld = new ldloader({
+        container: this.root,
+        autoZ: true,
+        className: 'ldld full'
+      });
+    }
     this.i18n = opt.i18n || {
       t: function(it){
         return it;
@@ -90,20 +92,30 @@
       return results$;
     },
     load: function(opt){
-      var family, font, that, s, w, path;
-      family = typeof opt === 'number' ? this.meta.family[opt] : opt;
-      font = family.fonts[0];
-      if (that = font.xfont) {
-        return Promise.resolve(that);
-      }
-      s = this.meta.index.style[font.s];
-      w = this.meta.index.weight[font.w];
-      path = this._url.links + "/" + family.n + "/" + s + "/" + w + (font.x ? '' : '.ttf');
-      return xfl.load({
-        path: path,
-        name: family.n
-      }).then(function(it){
-        return font.xfont = it;
+      var this$ = this;
+      return this.init().then(function(){
+        var family, ref$, font, that, s, w, path;
+        family = typeof opt === 'number'
+          ? this$.meta.family[opt]
+          : typeof opt === 'string' ? this$.meta.family.filter(function(it){
+            return it.n.toLowerCase() === opt.toLowerCase();
+          })[0] : opt;
+        if (!family) {
+          return Promise.reject((ref$ = new Error(), ref$.message = "font not found", ref$.id = 404, ref$));
+        }
+        font = family.fonts[0];
+        if (that = font.xfont) {
+          return Promise.resolve(that);
+        }
+        s = this$.meta.index.style[font.s];
+        w = this$.meta.index.weight[font.w];
+        path = this$._url.links + "/" + family.n + "/" + s + "/" + w + (font.x ? '' : '.ttf');
+        return xfl.load({
+          path: path,
+          name: family.n
+        }).then(function(it){
+          return font.xfont = it;
+        });
       });
     },
     render: function(){
@@ -151,6 +163,9 @@
       });
       return p.then(function(){
         var k, ref$, v;
+        if (!this$.root) {
+          return;
+        }
         this$.cfg = {};
         if (this$.i18n.addResourceBundle) {
           for (k in ref$ = i18n) {

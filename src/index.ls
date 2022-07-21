@@ -21,7 +21,7 @@ xfc = (opt = {}) ->
   @root = if typeof(opt.root) == \string => document.querySelector(opt.root) else opt.root
   @_init-render = if opt.init-render? => opt.init-render else false
   @evt-handler = {}
-  @ldld = new ldloader container: @root, auto-z: true, class-name: 'ldld full'
+  if @root => @ldld = new ldloader container: @root, auto-z: true, class-name: 'ldld full'
   @i18n = opt.i18n or {t: -> it}
   @init = once ~> @_init!
   @
@@ -30,14 +30,19 @@ xfc.prototype = Object.create(Object.prototype) <<< do
   on: (n, cb) -> (if Array.isArray(n) => n else [n]).map (n) ~> @evt-handler.[][n].push cb
   fire: (n, ...v) -> for cb in (@evt-handler[n] or []) => cb.apply @, v
   load: (opt) ->
-    family = if typeof(opt) == \number => @meta.family[opt] else opt
-    font = family.fonts.0
-    if font.xfont => return Promise.resolve that
-    s = @meta.index.style[font.s]
-    w = @meta.index.weight[font.w]
-    path = "#{@_url.links}/#{family.n}/#{s}/#{w}#{if font.x => '' else '.ttf'}"
-    xfl.load {path, name: family.n}
-      .then -> return font.xfont = it
+    @init!
+      .then ~>
+        family = if typeof(opt) == \number => @meta.family[opt]
+        else if typeof(opt) == \string => @meta.family.filter(-> it.n.toLowerCase! == opt.toLowerCase!).0
+        else opt
+        if !family => return Promise.reject(new Error! <<< {message: "font not found", id: 404})
+        font = family.fonts.0
+        if font.xfont => return Promise.resolve that
+        s = @meta.index.style[font.s]
+        w = @meta.index.weight[font.w]
+        path = "#{@_url.links}/#{family.n}/#{s}/#{w}#{if font.x => '' else '.ttf'}"
+        xfl.load {path, name: family.n}
+          .then -> return font.xfont = it
 
   render: ->
     @ldld.on!
@@ -64,6 +69,7 @@ xfc.prototype = Object.create(Object.prototype) <<< do
       xhr.send!
     p
       .then ~>
+        if !@root => return
         @cfg = {}
 
         if @i18n.add-resource-bundle

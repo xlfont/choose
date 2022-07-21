@@ -1,8 +1,12 @@
 # Change Logs
 
-## v0.0.13 (upcoming)
+## v0.0.13
 
  - remove svg2png to fix vulnerability
+ - support lazy init until load
+ - support load with font name
+ - support headless mode
+ - upgrade modules
 
 
 ## v0.0.12
