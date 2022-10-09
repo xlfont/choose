@@ -34,6 +34,9 @@ xfc.prototype = Object.create(Object.prototype) <<< do
       .then ~>
         family = if typeof(opt) == \number => @meta.family[opt]
         else if typeof(opt) == \string => @meta.family.filter(-> it.n.toLowerCase! == opt.toLowerCase!).0
+        # simplified font obj {name, style, weight}
+        else if opt.name => @meta.family.filter(->it.n.toLowerCase! == opt.name.toLowerCase!).0
+        # font obj itself
         else opt
         if !family => return Promise.reject(new Error! <<< {message: "font not found", id: 404})
         font = family.fonts.0

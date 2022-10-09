@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.0.14
+
+ - support font loading with simplified font object.
+
+
 ## v0.0.13
 
  - remove svg2png to fix vulnerability

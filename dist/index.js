@@ -97,9 +97,13 @@
         var family, ref$, font, that, s, w, path;
         family = typeof opt === 'number'
           ? this$.meta.family[opt]
-          : typeof opt === 'string' ? this$.meta.family.filter(function(it){
-            return it.n.toLowerCase() === opt.toLowerCase();
-          })[0] : opt;
+          : typeof opt === 'string'
+            ? this$.meta.family.filter(function(it){
+              return it.n.toLowerCase() === opt.toLowerCase();
+            })[0]
+            : opt.name ? this$.meta.family.filter(function(it){
+              return it.n.toLowerCase() === opt.name.toLowerCase();
+            })[0] : opt;
         if (!family) {
           return Promise.reject((ref$ = new Error(), ref$.message = "font not found", ref$.id = 404, ref$));
         }

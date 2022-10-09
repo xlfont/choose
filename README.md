@@ -51,6 +51,7 @@ Check `web/src/pug/index.pug` for example with `ldcover` and `@xlfont/choose`.
    - `opt` can be either:
      - a number: return the font by the given index from the font family list.
      - a string: return the font with the exact same name to `opt`, case insensitive.
+     - a simplified font object such as `{name, style, weight}`
      - the font family object itself
 
 
