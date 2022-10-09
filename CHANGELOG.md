@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.0.15
+
+ - return null when load font with null provided as parameter
+
+
 ## v0.0.14
 
  - support font loading with simplified font object.

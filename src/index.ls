@@ -32,6 +32,7 @@ xfc.prototype = Object.create(Object.prototype) <<< do
   load: (opt) ->
     @init!
       .then ~>
+        if !opt => return null
         family = if typeof(opt) == \number => @meta.family[opt]
         else if typeof(opt) == \string => @meta.family.filter(-> it.n.toLowerCase! == opt.toLowerCase!).0
         # simplified font obj {name, style, weight}

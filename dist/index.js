@@ -95,6 +95,9 @@
       var this$ = this;
       return this.init().then(function(){
         var family, ref$, font, that, s, w, path;
+        if (!opt) {
+          return null;
+        }
         family = typeof opt === 'number'
           ? this$.meta.family[opt]
           : typeof opt === 'string'
