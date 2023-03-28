@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.0.16
+
+ - init dropdown if `BSN` is available
+
+
 ## v0.0.15
 
  - return null when load font with null provided as parameter

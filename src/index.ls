@@ -86,6 +86,9 @@ xfc.prototype = Object.create(Object.prototype) <<< do
           root: @root
           action: click:
             cancel: ~> @fire \choose, null
+          init:
+            "cur-subset": ({node}) -> if BSN? => new BSN.Dropdown node
+            "cur-cat": ({node}) -> if BSN? => new BSN.Dropdown node
           handler:
             "cur-subset": ({node}) ~>
               node.textContent = @cfg.subset or 'all'

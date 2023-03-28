@@ -193,6 +193,22 @@
               }
             }
           },
+          init: {
+            "cur-subset": function(arg$){
+              var node;
+              node = arg$.node;
+              if (typeof BSN != 'undefined' && BSN !== null) {
+                return new BSN.Dropdown(node);
+              }
+            },
+            "cur-cat": function(arg$){
+              var node;
+              node = arg$.node;
+              if (typeof BSN != 'undefined' && BSN !== null) {
+                return new BSN.Dropdown(node);
+              }
+            }
+          },
           handler: {
             "cur-subset": function(arg$){
               var node;
