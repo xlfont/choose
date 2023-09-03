@@ -2,6 +2,7 @@
 
 ## v0.0.17
 
+ - upgrade dependencies for vulnerabilities fixing
  - support API for fallback URL for font files.
  - tweak css for font preview item to prevent hover glitching
 
