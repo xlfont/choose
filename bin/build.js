@@ -8,7 +8,7 @@
   yargs = require('yargs');
   opentype = require('@plotdb/opentype.js');
   progress = require('progress');
-  colors = require('colors');
+  colors = require('@plotdb/colors');
   sharp = require('sharp');
   pngquant = require('pngquant');
   lib = path.dirname(fs.realpathSync(__filename));

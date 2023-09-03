@@ -1,4 +1,4 @@
-require! <[fs fs-extra path js-yaml yargs @plotdb/opentype.js progress colors sharp pngquant]>
+require! <[fs fs-extra path js-yaml yargs @plotdb/opentype.js progress @plotdb/colors sharp pngquant]>
 #require! <[svg2png]>
 
 lib = path.dirname fs.realpathSync __filename
