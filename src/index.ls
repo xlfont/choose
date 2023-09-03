@@ -18,6 +18,7 @@ i18n =
 
 xfc = (opt = {}) ->
   @_url = opt{meta,links}
+  <[meta links]>.map (n) ~> if !@_url[n] and xfc._url[n] => @_url[n] = xfc._url[n]
   @root = if typeof(opt.root) == \string => document.querySelector(opt.root) else opt.root
   @_init-render = if opt.init-render? => opt.init-render else false
   @evt-handler = {}
@@ -25,6 +26,8 @@ xfc = (opt = {}) ->
   @i18n = opt.i18n or {t: -> it}
   @init = once ~> @_init!
   @
+
+xfc.url = (o = {}) -> return if !arguments.length => (xfc._url or {}) else (xfc.{}_url <<< o)
 
 xfc.prototype = Object.create(Object.prototype) <<< do
   on: (n, cb) -> (if Array.isArray(n) => n else [n]).map (n) ~> @evt-handler.[][n].push cb

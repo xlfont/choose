@@ -35,8 +35,8 @@ Check `web/src/pug/index.pug` for example with `ldcover` and `@xlfont/choose`.
 ## Constructor Options
 
  - `root`: container element or selector for inserting font chooser
- - `meta`: metadata URL root
- - `links`: font file URL root
+ - `meta`: metadata URL root. fallback to url set by `xfc.url` if omitted.
+ - `links`: font file URL root. fallback to url set by `xfc.url` if omitted.
  - `i18n`: i18n object in `i18next` spec.
  - `initRender`: default false. when false, list should be rendered by calling `render` function manually.
    - font list rendering involves bounding box calculation, which may not be available when container isnt' visible.
@@ -53,6 +53,15 @@ Check `web/src/pug/index.pug` for example with `ldcover` and `@xlfont/choose`.
      - a string: return the font with the exact same name to `opt`, case insensitive.
      - a simplified font object such as `{name, style, weight}`
      - the font family object itself
+
+
+## Class API
+
+ - `url(opt)`: set url hint for meta and links urls
+   - `opt` is an object with following fields:
+     - `meta`: suggested metadata URL root
+     - `links`: suggested font file URL root
+   - when `opt` is omitted, return url hint or `{}` if not available.
 
 
 ## Events

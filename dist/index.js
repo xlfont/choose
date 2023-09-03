@@ -46,6 +46,11 @@
       meta: opt.meta,
       links: opt.links
     };
+    ['meta', 'links'].map(function(n){
+      if (!this$._url[n] && xfc._url[n]) {
+        return this$._url[n] = xfc._url[n];
+      }
+    });
     this.root = typeof opt.root === 'string'
       ? document.querySelector(opt.root)
       : opt.root;
@@ -67,6 +72,12 @@
       return this$._init();
     });
     return this;
+  };
+  xfc.url = function(o){
+    o == null && (o = {});
+    return !arguments.length
+      ? xfc._url || {}
+      : import$(xfc._url || (xfc._url = {}), o);
   };
   xfc.prototype = import$(Object.create(Object.prototype), {
     on: function(n, cb){

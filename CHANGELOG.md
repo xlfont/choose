@@ -1,5 +1,11 @@
 # Change Logs
 
+## v0.0.17
+
+ - support API for fallback URL for font files.
+ - tweak css for font preview item to prevent hover glitching
+
+
 ## v0.0.16
 
  - init dropdown if `BSN` is available
