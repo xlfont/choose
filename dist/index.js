@@ -167,6 +167,12 @@
           }
           try {
             this$.meta = JSON.parse(xhr.responseText);
+            this$.meta.family.forEach(function(n, i){
+              return n.i = i;
+            });
+            this$.meta.family = this$.meta.family.filter(function(it){
+              return it.n;
+            });
           } catch (e$) {
             e = e$;
             return rej(e);
@@ -203,7 +209,6 @@
                 var node;
                 node = arg$.node;
                 this$.cfg.keyword = node.value || '';
-                console.log(">>>");
                 return this$.view.render(['font']);
               }
             },
@@ -296,8 +301,8 @@
               },
               action: {
                 click: function(arg$){
-                  var node, data, idx;
-                  node = arg$.node, data = arg$.data, idx = arg$.idx;
+                  var node, data;
+                  node = arg$.node, data = arg$.data;
                   this$.ldld.on();
                   this$.fire('load.start');
                   return this$.load(data)['finally'](function(){
@@ -312,14 +317,15 @@
                 }
               },
               handler: function(arg$){
-                var node, data, idx, ref$, k, c, s;
-                node = arg$.node, data = arg$.data, idx = arg$.idx;
+                var node, data, ref$, k, c, s, idx;
+                node = arg$.node, data = arg$.data;
                 ref$ = [this$.cfg.keyword, this$.cfg.category, this$.cfg.subset, this$.meta.index], k = ref$[0], c = ref$[1], s = ref$[2], idx = ref$[3];
-                return node.classList.toggle('d-none', (k && !~(data.n + data.d).toLowerCase().indexOf(k.toLowerCase())) || !(!c || c === 'all' || idx.category.indexOf(c) === data.c) || !(!s || s === 'all' || in$(idx.subset.indexOf(s), data.s)));
+                return node.classList.toggle('d-none', !data.n || (k && !~('' + data.n + data.d).toLowerCase().indexOf(k.toLowerCase())) || !(!c || c === 'all' || idx.category.indexOf(c) === data.c) || !(!s || s === 'all' || in$(idx.subset.indexOf(s), data.s)));
               },
               init: function(arg$){
                 var node, data, idx, col, row, p, w, h, n;
-                node = arg$.node, data = arg$.data, idx = arg$.idx;
+                node = arg$.node, data = arg$.data;
+                idx = data.i;
                 col = idx % this$.meta.dim.col;
                 row = Math.floor(idx / this$.meta.dim.col);
                 p = this$.meta.dim.padding;

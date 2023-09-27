@@ -68,6 +68,8 @@ xfc.prototype = Object.create(Object.prototype) <<< do
         if xhr.status != 200 => return rej xhr.responseText
         try
           @meta = JSON.parse(xhr.responseText)
+          @meta.family.forEach (n,i) -> n.i = i
+          @meta.family = @meta.family.filter(->it.n)
         catch e
           return rej e
         res!
@@ -125,7 +127,7 @@ xfc.prototype = Object.create(Object.prototype) <<< do
               list: ~> @meta.family
               host: if vscroll? => vscroll.fixed
               key: ~> it.n
-              action: click: ({node, data, idx}) ~>
+              action: click: ({node, data}) ~>
                 @ldld.on!
                 @fire \load.start
                 @load data
@@ -136,14 +138,16 @@ xfc.prototype = Object.create(Object.prototype) <<< do
                   .catch ~>
                     console.error "[@xlfont/choose] font load failed: ", it
                     @fire \load.fail, it
-              handler: ({node, data, idx}) ~>
+              handler: ({node, data}) ~>
                 [k,c,s,idx] = [@cfg.keyword, @cfg.category, @cfg.subset, @meta.index]
                 node.classList.toggle \d-none, (
-                  (k and !~((data.n + data.d).toLowerCase!).indexOf(k.toLowerCase!)) or
+                  !data.n or
+                  (k and !~(('' + data.n + data.d).toLowerCase!).indexOf(k.toLowerCase!)) or
                   !(!c or c == \all or (idx.category.indexOf(c) == data.c)) or
                   !(!s or s == \all or (idx.subset.indexOf(s) in data.s))
                 )
-              init: ({node, data, idx}) ~>
+              init: ({node, data}) ~>
+                idx = data.i
                 col = idx % @meta.dim.col
                 row = Math.floor(idx / @meta.dim.col)
                 p = @meta.dim.padding
