@@ -198,6 +198,15 @@
           initRender: this$._initRender,
           root: this$.root,
           action: {
+            input: {
+              search: function(arg$){
+                var node;
+                node = arg$.node;
+                this$.cfg.keyword = node.value || '';
+                console.log(">>>");
+                return this$.view.render(['font']);
+              }
+            },
             click: {
               cancel: function(){
                 return this$.fire('choose', null);
@@ -303,10 +312,10 @@
                 }
               },
               handler: function(arg$){
-                var node, data, idx, ref$, c, s;
+                var node, data, idx, ref$, k, c, s;
                 node = arg$.node, data = arg$.data, idx = arg$.idx;
-                ref$ = [this$.cfg.category, this$.cfg.subset, this$.meta.index], c = ref$[0], s = ref$[1], idx = ref$[2];
-                return node.classList.toggle('d-none', !(!c || c === 'all' || idx.category.indexOf(c) === data.c) || !(!s || s === 'all' || in$(idx.subset.indexOf(s), data.s)));
+                ref$ = [this$.cfg.keyword, this$.cfg.category, this$.cfg.subset, this$.meta.index], k = ref$[0], c = ref$[1], s = ref$[2], idx = ref$[3];
+                return node.classList.toggle('d-none', (k && !~(data.n + data.d).toLowerCase().indexOf(k.toLowerCase())) || !(!c || c === 'all' || idx.category.indexOf(c) === data.c) || !(!s || s === 'all' || in$(idx.subset.indexOf(s), data.s)));
               },
               init: function(arg$){
                 var node, data, idx, col, row, p, w, h, n;

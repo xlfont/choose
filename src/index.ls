@@ -87,8 +87,11 @@ xfc.prototype = Object.create(Object.prototype) <<< do
         @view = new ldview do
           init-render: @_init-render
           root: @root
-          action: click:
-            cancel: ~> @fire \choose, null
+          action:
+            input: search: ({node}) ~>
+              @cfg.keyword = (node.value or '')
+              @view.render <[font]>
+            click: cancel: ~> @fire \choose, null
           init:
             "cur-subset": ({node}) -> if BSN? => new BSN.Dropdown node
             "cur-cat": ({node}) -> if BSN? => new BSN.Dropdown node
@@ -134,8 +137,9 @@ xfc.prototype = Object.create(Object.prototype) <<< do
                     console.error "[@xlfont/choose] font load failed: ", it
                     @fire \load.fail, it
               handler: ({node, data, idx}) ~>
-                [c,s,idx] = [@cfg.category, @cfg.subset, @meta.index]
+                [k,c,s,idx] = [@cfg.keyword, @cfg.category, @cfg.subset, @meta.index]
                 node.classList.toggle \d-none, (
+                  (k and !~((data.n + data.d).toLowerCase!).indexOf(k.toLowerCase!)) or
                   !(!c or c == \all or (idx.category.indexOf(c) == data.c)) or
                   !(!s or s == \all or (idx.subset.indexOf(s) in data.s))
                 )

@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.0.18
+
+ - support searching
+
+
 ## v0.0.17
 
  - upgrade dependencies for vulnerabilities fixing
