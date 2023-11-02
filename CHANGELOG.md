@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.0.20
+
+ - support custom uploaded font file
+
+
 ## v0.0.19
 
  - ignore empty object in meta.json, while still keeping their index to correctly match thumbnails in sprite file.

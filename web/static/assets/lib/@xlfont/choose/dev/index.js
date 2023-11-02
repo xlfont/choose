@@ -109,6 +109,9 @@
         if (!opt) {
           return null;
         }
+        if ((xfc._customFont || (xfc._customFont = {}))[opt.name]) {
+          return xfc._customFont[opt.name];
+        }
         family = typeof opt === 'number'
           ? this$.meta.family[opt]
           : typeof opt === 'string'
@@ -215,6 +218,34 @@
             click: {
               cancel: function(){
                 return this$.fire('choose', null);
+              }
+            },
+            change: {
+              upload: function(arg$){
+                var node, file, id, url, font;
+                node = arg$.node;
+                file = node.files ? node.files[0] : null;
+                if (!file) {
+                  return node.value = '';
+                }
+                this$.ldld.on();
+                id = "custom-" + (parseInt(Math.random() * Date.now()) + Date.now()).toString(36);
+                url = URL.createObjectURL(file);
+                (xfc._customFont || (xfc._customFont = {}))[id] = font = new xfl.xlfont({
+                  path: url,
+                  name: id,
+                  isXl: false
+                });
+                return font.init()['finally'](function(){
+                  node.value = '';
+                  this$.fire('load.end');
+                  return this$.ldld.off();
+                }).then(function(){
+                  return this$.fire('choose', font);
+                })['catch'](function(it){
+                  console.error("[@xlfont/choose] font load failed: ", it);
+                  return this$.fire('load.fail', it);
+                });
               }
             }
           },

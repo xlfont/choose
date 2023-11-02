@@ -36,6 +36,7 @@ xfc.prototype = Object.create(Object.prototype) <<< do
     @init!
       .then ~>
         if !opt => return null
+        if xfc.{}_custom-font[opt.name] => return xfc._custom-font[opt.name]
         family = if typeof(opt) == \number => @meta.family[opt]
         else if typeof(opt) == \string => @meta.family.filter(-> it.n.toLowerCase! == opt.toLowerCase!).0
         # simplified font obj {name, style, weight}
@@ -94,6 +95,23 @@ xfc.prototype = Object.create(Object.prototype) <<< do
               @cfg.keyword = (node.value or '')
               @view.render <[font]>
             click: cancel: ~> @fire \choose, null
+            change: upload: ({node}) ~>
+              file = if node.files => node.files.0 else null
+              if !file => return node.value = ''
+              @ldld.on!
+              id = "custom-" + (parseInt(Math.random! * Date.now!) + Date.now!).toString(36)
+              url = URL.createObjectURL file
+              xfc.{}_custom-font[id] = font = new xfl.xlfont path: url, name: id, is-xl: false
+              font.init!
+                .finally ~>
+                  node.value = ''
+                  @fire \load.end
+                  @ldld.off!
+                .then ~> @fire \choose, font
+                .catch ~>
+                  console.error "[@xlfont/choose] font load failed: ", it
+                  @fire \load.fail, it
+
           init:
             "cur-subset": ({node}) -> if BSN? => new BSN.Dropdown node
             "cur-cat": ({node}) -> if BSN? => new BSN.Dropdown node
