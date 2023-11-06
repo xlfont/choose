@@ -1,6 +1,6 @@
 # Change Logs
 
-## v0.0.22 (upcoming)
+## v0.0.22
 
  - add `config` method
  - `render` now returns Promise
