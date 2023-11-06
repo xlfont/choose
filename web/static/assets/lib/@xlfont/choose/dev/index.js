@@ -106,7 +106,7 @@
     config: function(opt){
       var this$ = this;
       opt == null && (opt = {});
-      ['state', 'upload'].forEach(function(it){
+      ['state', 'upload', 'order'].forEach(function(it){
         if (opt[it] != null) {
           return this$.opt[it] = opt[it];
         }

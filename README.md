@@ -53,7 +53,7 @@ Check `web/src/pug/index.pug` for example with `ldcover` and `@xlfont/choose`.
 
 ## API
 
- - `config(opt)`: update config, including `state` and `upload` option in constructor parameters.
+ - `config(opt)`: update config, including `state`, `order` and `upload` option in constructor parameters.
  - `render()`: render font list.
  - `load(opt)`: load a font based on the given parameter `opt`.
    - returns a Promise which resolves with the desired font, or rejects if font is not found.
