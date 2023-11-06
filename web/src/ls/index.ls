@@ -16,7 +16,7 @@ i18next.init supportedLng: <[en zh-TW]>, fallbackLng: \zh-TW
       meta: "#base/meta"
       links: "#base/links"
       i18n: i18next
-      upload: limited: true
+      upload: -> return true
       state: ({font, idx, type}) ->
         if type == \limited => return if font.n in list => false else true
       order: (a, b) ->

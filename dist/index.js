@@ -238,7 +238,7 @@
             },
             change: {
               upload: function(arg$){
-                var node, file, id, url, font;
+                var node, file, id, url, font, limited;
                 node = arg$.node;
                 file = node.files ? node.files[0] : null;
                 if (!file) {
@@ -252,7 +252,15 @@
                   name: id,
                   isXl: false
                 });
-                font.limited = !!this$.opt.upload.limited;
+                limited = typeof this$.opt.upload !== 'function'
+                  ? false
+                  : this$.opt.upload({
+                    font: font,
+                    type: 'limited'
+                  });
+                if (limited != null) {
+                  font.limited = limited;
+                }
                 return font.init()['finally'](function(){
                   node.value = '';
                   this$.fire('load.end');
@@ -284,9 +292,16 @@
           },
           handler: {
             "upload-button": function(arg$){
-              var node, ref$;
+              var node, limited;
               node = arg$.node;
-              return node.classList.toggle('limited', !!((ref$ = this$.opt).upload || (ref$.upload = {})).limited);
+              limited = typeof this$.opt.upload !== 'function'
+                ? false
+                : this$.opt.upload({
+                  type: 'limited'
+                });
+              if (limited != null) {
+                return node.classList.toggle('limited', limited);
+              }
             },
             "cur-subset": function(arg$){
               var node;

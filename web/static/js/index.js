@@ -16,8 +16,8 @@
       meta: base + "/meta",
       links: base + "/links",
       i18n: i18next,
-      upload: {
-        limited: true
+      upload: function(){
+        return true;
       },
       state: function(arg$){
         var font, idx, type;

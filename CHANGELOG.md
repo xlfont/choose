@@ -3,6 +3,7 @@
 ## v0.0.22 (upcoming)
 
  - add `config` method
+ - make option `upload` a function
 
 
 ## v0.0.21

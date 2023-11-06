@@ -108,7 +108,9 @@ xfc.prototype = Object.create(Object.prototype) <<< do
               id = "custom-" + (parseInt(Math.random! * Date.now!) + Date.now!).toString(36)
               url = URL.createObjectURL file
               xfc.{}_custom-font[id] = font = new xfl.xlfont path: url, name: id, is-xl: false
-              font.limited = !!@opt.upload.limited
+              limited = if typeof(@opt.upload) != \function => false
+              else @opt.upload({font, type: \limited})
+              if limited? => font.limited = limited
               font.init!
                 .finally ~>
                   node.value = ''
@@ -123,7 +125,10 @@ xfc.prototype = Object.create(Object.prototype) <<< do
             "cur-subset": ({node}) -> if BSN? => new BSN.Dropdown node
             "cur-cat": ({node}) -> if BSN? => new BSN.Dropdown node
           handler:
-            "upload-button": ({node}) ~> node.classList.toggle \limited, !!@opt.{}upload.limited
+            "upload-button": ({node}) ~>
+              limited = if typeof(@opt.upload) != \function => false
+              else @opt.upload type: \limited
+              if limited? => node.classList.toggle \limited, limited
             "cur-subset": ({node}) ~>
               node.textContent = @cfg.subset or 'all'
               node.classList.toggle \active, !!(@cfg.subset and @cfg.subset != 'all')
