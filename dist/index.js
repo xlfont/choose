@@ -103,6 +103,16 @@
       }
       return results$;
     },
+    config: function(opt){
+      var this$ = this;
+      opt == null && (opt = {});
+      ['state', 'upload'].forEach(function(it){
+        if (opt[it] != null) {
+          return this$.opt[it] = opt[it];
+        }
+      });
+      return this.render();
+    },
     load: function(opt){
       var this$ = this;
       return this.init().then(function(){

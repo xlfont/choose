@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.0.22 (upcoming)
+
+ - add `config` method
+
+
 ## v0.0.21
 
  - tweak upload button label

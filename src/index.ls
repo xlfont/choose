@@ -33,6 +33,9 @@ xfc.url = (o = {}) -> return if !arguments.length => (xfc._url or {}) else (xfc.
 xfc.prototype = Object.create(Object.prototype) <<< do
   on: (n, cb) -> (if Array.isArray(n) => n else [n]).map (n) ~> @evt-handler.[][n].push cb
   fire: (n, ...v) -> for cb in (@evt-handler[n] or []) => cb.apply @, v
+  config: (opt = {}) ->
+    <[state upload]>.for-each ~> if opt[it]? => @opt[it] = opt[it]
+    @render!
   load: (opt) ->
     @init!
       .then ~>
