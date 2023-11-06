@@ -1,5 +1,15 @@
 # Change Logs
 
+## v0.0.21
+
+ - tweak upload button label
+ - prevent upload button wrapping
+ - tweak font list style
+ - enforce init before rendering
+ - support font sorting
+ - support limitation in upload and font choosing
+
+
 ## v0.0.20
 
  - support custom uploaded font file
