@@ -19,13 +19,18 @@ mixin xfc
       .flex-grow-1.text-left
         .text-muted(style="font-size:12px",t) Name
         input.form-control.form-control-sm(ld="search", placeholder="Search...")
-      div
+      .text-nowrap
         .text-muted(style="font-size:12px") &nbsp;
         .btn.btn-sm.btn-text.mx-2(t) or
-        .btn.btn-sm.btn-outline-secondary.btn-upload #[span(t) Upload] #[input(type="file",ld="upload")]
+        .btn.btn-sm.btn-outline-secondary.btn-upload(ld="upload-button")
+          span(t) Use Your Own Font
+          input(type="file",ld="upload")
+          i.i-lock.ml-2
       .ml-2
         .text-muted(style="font-size:12px") &nbsp;
         .btn.btn-sm.btn-outline-secondary(t,ld="cancel") Cancel
-    .xfc-content.flex-grow-1(style="overflow-y:hidden"): .h-100(ld="font-list",style="display:grid;grid-template-columns:repeat(auto-fill,250px);grid-gap:1em;justify-content:space-around;overscroll-behavior:contain;overflow-y:scroll")
-      .xfc-font(ld-each="font"): .inner(ld="name")
+    .xfc-content.flex-grow-1(style="overflow-y:hidden"): .h-100(ld="font-list")
+      .xfc-font(ld-each="font")
+        .preview(ld="preview")
+        .name(ld="name")
     block

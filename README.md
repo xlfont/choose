@@ -41,6 +41,14 @@ Check `web/src/pug/index.pug` for example with `ldcover` and `@xlfont/choose`.
  - `initRender`: default false. when false, list should be rendered by calling `render` function manually.
    - font list rendering involves bounding box calculation, which may not be available when container isnt' visible.
    - in this case, user should manually call `render()` after container is visible.
+ - `order(a,b)`: sort font list based on given font objects where:
+   - `n`: font name
+ - `upload`: an object containing following flags:
+   - `limited`: upload functionality is limited
+ - `state({font, type})`: optional. return state of font for certain type.
+   - type can be either:
+     - `limited`: return true if this font is limited. default `limited` when `type` is omitted.
+   - if implemented, should return `undefined` for unsupported `type`.
 
 
 ## API

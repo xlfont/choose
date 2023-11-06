@@ -1,28 +1,65 @@
+.xfc
+  .btn-upload i.i-lock
+    display: none
+  .btn-upload.limited i.i-lock
+    display: inline-block
+
+.xfc-content
+  [ld="font-list"]
+    display: grid
+    grid-template-columns: repeat(auto-fill,250px)
+    grid-gap: .5em
+    justify-content: center
+    overscroll-behavior: contain
+    overflow-y: scroll
+
 .xfc-font
   transition: all .15s ease-in-out
   transform: translate(0,0)
-  border-radius: .25em
+  border-radius: .125em
   cursor: pointer
   text-align: center
   position: relative
-  .inner
+  margin-bottom: .3em
+  .preview
+    transition: margin .15s ease-in-out
+    margin: 1em 0
+  .name
     width: 100%
-    height: 0
+    height: 26px
     font-size: 12px
     position: absolute
-    bottom: 0
-    transform: translate(0,8px)
+    bottom: 2px
+    padding-bottom: .5em
     opacity: 0
     transition: all .15s ease-in-out
     display: flex
     align-items: center
     justify-content: center
+  &.limited
+    background-color: #fafbfc
+    &:before
+      font-family: ldi
+      content: "\f011"
+      line-height: 1em
+      position: absolute
+      right: .25em
+      bottom: .25em
+      font-size: 14px
+      opacity: .25
+      padding: .2em
+      background: #fafbfc
+      border-radius: 25%
+      transition: opacity .15s ease-in-out
 
 .xfc-font:hover
-  transform: translate(0,-6px)
+  transform: translate(0,-3px)
   box-shadow: 0 6px 4px rgba(0,0,0,.15)
-  .inner
+  .preview
+    margin: .8em 0 1.2em
+  .name
     opacity: .75
-    transform: translate(0,26px)
+    bottom: -3px
     height: 26px
-
+  &.limited:before
+    opacity: .75

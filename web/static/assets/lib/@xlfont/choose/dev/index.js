@@ -34,7 +34,7 @@
       "Category": "分類",
       "Subset": "子集",
       "Name": "名稱",
-      "Upload": "上傳",
+      "Use Your Own Font": "上傳",
       "or": "或",
       "Cancel": "取消"
     }
@@ -42,6 +42,7 @@
   xfc = function(opt){
     var this$ = this;
     opt == null && (opt = {});
+    this.opt = opt;
     this._url = {
       meta: opt.meta,
       links: opt.links
@@ -143,9 +144,11 @@
       var _, this$ = this;
       this.ldld.on();
       _ = function(){
-        this$.view.render();
-        this$.ldld.off();
-        return this$._rendered = true;
+        return this$.init().then(function(){
+          this$.view.render();
+          this$.ldld.off();
+          return this$._rendered = true;
+        });
       };
       if (this._rendered) {
         return _();
@@ -176,6 +179,9 @@
             this$.meta.family = this$.meta.family.filter(function(it){
               return it.n;
             });
+            if (this$.opt.order) {
+              this$.meta.family.sort(this$.opt.order);
+            }
           } catch (e$) {
             e = e$;
             return rej(e);
@@ -236,6 +242,7 @@
                   name: id,
                   isXl: false
                 });
+                font.limited = !!this$.opt.upload.limited;
                 return font.init()['finally'](function(){
                   node.value = '';
                   this$.fire('load.end');
@@ -266,6 +273,11 @@
             }
           },
           handler: {
+            "upload-button": function(arg$){
+              var node, ref$;
+              node = arg$.node;
+              return node.classList.toggle('limited', !!((ref$ = this$.opt).upload || (ref$.upload = {})).limited);
+            },
             "cur-subset": function(arg$){
               var node;
               node = arg$.node;
@@ -340,6 +352,10 @@
                     this$.fire('load.end');
                     return this$.ldld.off();
                   }).then(function(it){
+                    it.limited = this$.opt.state({
+                      font: it,
+                      type: 'limited'
+                    });
                     return this$.fire('choose', it);
                   })['catch'](function(it){
                     console.error("[@xlfont/choose] font load failed: ", it);
@@ -348,13 +364,22 @@
                 }
               },
               handler: function(arg$){
-                var node, data, ref$, k, c, s, idx;
+                var node, data, ref$, k, c, s, idx, limited;
                 node = arg$.node, data = arg$.data;
                 ref$ = [this$.cfg.keyword, this$.cfg.category, this$.cfg.subset, this$.meta.index], k = ref$[0], c = ref$[1], s = ref$[2], idx = ref$[3];
+                if (this$.opt.state) {
+                  limited = this$.opt.state({
+                    font: data,
+                    type: 'limited'
+                  });
+                  if (limited != null) {
+                    node.classList.toggle('limited', limited);
+                  }
+                }
                 return node.classList.toggle('d-none', !data.n || (k && !~('' + data.n + data.d).toLowerCase().indexOf(k.toLowerCase())) || !(!c || c === 'all' || idx.category.indexOf(c) === data.c) || !(!s || s === 'all' || in$(idx.subset.indexOf(s), data.s)));
               },
               init: function(arg$){
-                var node, data, idx, col, row, p, w, h, n;
+                var node, data, idx, col, row, p, w, h, n, b;
                 node = arg$.node, data = arg$.data;
                 idx = data.i;
                 col = idx % this$.meta.dim.col;
@@ -363,7 +388,9 @@
                 w = this$.meta.dim.width;
                 h = this$.meta.dim.height;
                 n = node.querySelector('[ld=name]');
-                import$(node.style, {
+                b = node.querySelector('[ld=preview]');
+                node.style;
+                import$(b.style, {
                   width: w + "px",
                   height: h + "px",
                   backgroundImage: "url(" + this$._url.meta + "/sprite.min.png)",

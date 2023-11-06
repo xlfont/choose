@@ -11,12 +11,13 @@ i18n =
     "Category": "分類"
     "Subset": "子集"
     "Name": "名稱"
-    "Upload": "上傳"
+    "Use Your Own Font": "上傳"
     "or": "或"
     "Cancel": "取消"
   }
 
 xfc = (opt = {}) ->
+  @opt = opt
   @_url = opt{meta,links}
   <[meta links]>.map (n) ~> if !@_url[n] and xfc._url[n] => @_url[n] = xfc._url[n]
   @root = if typeof(opt.root) == \string => document.querySelector(opt.root) else opt.root
@@ -55,6 +56,7 @@ xfc.prototype = Object.create(Object.prototype) <<< do
   render: ->
     @ldld.on!
     _ = ~>
+      <~ @init!then _
       @view.render!
       @ldld.off!
       @_rendered = true
@@ -71,6 +73,7 @@ xfc.prototype = Object.create(Object.prototype) <<< do
           @meta = JSON.parse(xhr.responseText)
           @meta.family.forEach (n,i) -> n.i = i
           @meta.family = @meta.family.filter(->it.n)
+          if @opt.order => @meta.family.sort @opt.order
         catch e
           return rej e
         res!
@@ -102,6 +105,7 @@ xfc.prototype = Object.create(Object.prototype) <<< do
               id = "custom-" + (parseInt(Math.random! * Date.now!) + Date.now!).toString(36)
               url = URL.createObjectURL file
               xfc.{}_custom-font[id] = font = new xfl.xlfont path: url, name: id, is-xl: false
+              font.limited = !!@opt.upload.limited
               font.init!
                 .finally ~>
                   node.value = ''
@@ -116,6 +120,7 @@ xfc.prototype = Object.create(Object.prototype) <<< do
             "cur-subset": ({node}) -> if BSN? => new BSN.Dropdown node
             "cur-cat": ({node}) -> if BSN? => new BSN.Dropdown node
           handler:
+            "upload-button": ({node}) ~> node.classList.toggle \limited, !!@opt.{}upload.limited
             "cur-subset": ({node}) ~>
               node.textContent = @cfg.subset or 'all'
               node.classList.toggle \active, !!(@cfg.subset and @cfg.subset != 'all')
@@ -152,12 +157,17 @@ xfc.prototype = Object.create(Object.prototype) <<< do
                   .finally ~>
                     @fire \load.end
                     @ldld.off!
-                  .then ~> @fire \choose, it
+                  .then ~>
+                    it.limited = @opt.state {font: it, type: \limited}
+                    @fire \choose, it
                   .catch ~>
                     console.error "[@xlfont/choose] font load failed: ", it
                     @fire \load.fail, it
               handler: ({node, data}) ~>
                 [k,c,s,idx] = [@cfg.keyword, @cfg.category, @cfg.subset, @meta.index]
+                if @opt.state =>
+                  limited = @opt.state({font: data, type: \limited})
+                  if limited? => node.classList.toggle \limited, limited
                 node.classList.toggle \d-none, (
                   !data.n or
                   (k and !~(('' + data.n + data.d).toLowerCase!).indexOf(k.toLowerCase!)) or
@@ -172,7 +182,9 @@ xfc.prototype = Object.create(Object.prototype) <<< do
                 w = @meta.dim.width
                 h = @meta.dim.height
                 n = node.querySelector('[ld=name]')
-                node.style <<< do
+                b = node.querySelector('[ld=preview]')
+                node.style <<< {}
+                b.style <<< do
                   width: "#{w}px"
                   height: "#{h}px"
                   backgroundImage: "url(#{@_url.meta}/sprite.min.png)"

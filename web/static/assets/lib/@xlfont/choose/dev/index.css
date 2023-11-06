@@ -1,30 +1,72 @@
+.xfc .btn-upload i.i-lock {
+  display: none;
+}
+.xfc .btn-upload.limited i.i-lock {
+  display: inline-block;
+}
+.xfc-content [ld="font-list"] {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 250px);
+  grid-gap: 0.5em;
+  justify-content: center;
+  overscroll-behavior: contain;
+  overflow-y: scroll;
+}
 .xfc-font {
   transition: all 0.15s ease-in-out;
   transform: translate(0, 0);
-  border-radius: 0.25em;
+  border-radius: 0.125em;
   cursor: pointer;
   text-align: center;
   position: relative;
+  margin-bottom: 0.3em;
 }
-.xfc-font .inner {
+.xfc-font .preview {
+  transition: margin 0.15s ease-in-out;
+  margin: 1em 0;
+}
+.xfc-font .name {
   width: 100%;
-  height: 0;
+  height: 26px;
   font-size: 12px;
   position: absolute;
-  bottom: 0;
-  transform: translate(0, 8px);
+  bottom: 2px;
+  padding-bottom: 0.5em;
   opacity: 0;
   transition: all 0.15s ease-in-out;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+.xfc-font.limited {
+  background-color: #fafbfc;
+}
+.xfc-font.limited:before {
+  font-family: ldi;
+  content: "\f011";
+  line-height: 1em;
+  position: absolute;
+  right: 0.25em;
+  bottom: 0.25em;
+  font-size: 14px;
+  opacity: 0.25;
+  padding: 0.2em;
+  background: #fafbfc;
+  border-radius: 25%;
+  transition: opacity 0.15s ease-in-out;
+}
 .xfc-font:hover {
-  transform: translate(0, -6px);
+  transform: translate(0, -3px);
   box-shadow: 0 6px 4px rgba(0,0,0,0.15);
 }
-.xfc-font:hover .inner {
+.xfc-font:hover .preview {
+  margin: 0.8em 0 1.2em;
+}
+.xfc-font:hover .name {
   opacity: 0.75;
-  transform: translate(0, 26px);
+  bottom: -3px;
   height: 26px;
+}
+.xfc-font:hover.limited:before {
+  opacity: 0.75;
 }
