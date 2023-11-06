@@ -3,6 +3,7 @@
 ## v0.0.22 (upcoming)
 
  - add `config` method
+ - `render` now returns Promise
  - make option `upload` a function
 
 

@@ -34,7 +34,10 @@ xfc.prototype = Object.create(Object.prototype) <<< do
   on: (n, cb) -> (if Array.isArray(n) => n else [n]).map (n) ~> @evt-handler.[][n].push cb
   fire: (n, ...v) -> for cb in (@evt-handler[n] or []) => cb.apply @, v
   config: (opt = {}) ->
-    <[state upload order]>.for-each ~> if opt[it]? => @opt[it] = opt[it]
+    <[state upload order]>.for-each ~>
+      if opt[it]? => @opt[it] = opt[it]
+    <~ @init!then _
+    if opt.order and @meta => @meta.family.sort @opt.order
     @render!
   load: (opt) ->
     @init!
@@ -64,8 +67,8 @@ xfc.prototype = Object.create(Object.prototype) <<< do
       @ldld.off!
       @_rendered = true
     # render may be a timing consuming job and thus may block UI.
-    if @_rendered => _!
-    else setTimeout (-> _!), 50
+    if @_rendered => return _!
+    return new Promise (res, rej) -> setTimeout (-> _!then -> res it), 50
   _init: ->
     p = new Promise (res, rej) ~>
       xhr = new XMLHttpRequest!

@@ -111,7 +111,12 @@
           return this$.opt[it] = opt[it];
         }
       });
-      return this.render();
+      return this.init().then(function(){
+        if (opt.order && this$.meta) {
+          this$.meta.family.sort(this$.opt.order);
+        }
+        return this$.render();
+      });
     },
     load: function(opt){
       var this$ = this;
@@ -162,11 +167,14 @@
       };
       if (this._rendered) {
         return _();
-      } else {
-        return setTimeout(function(){
-          return _();
-        }, 50);
       }
+      return new Promise(function(res, rej){
+        return setTimeout(function(){
+          return _().then(function(it){
+            return res(it);
+          });
+        }, 50);
+      });
     },
     _init: function(){
       var p, this$ = this;
