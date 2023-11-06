@@ -15,15 +15,15 @@ html
     meta(property="article:author",content="zbryikt")
     meta(property="article:section",content="Taiwan")
     meta(name="keywords",content="webfont,font loader,cjk")
-
-    +css("assets/lib/bootstrap/main/dist/css/bootstrap.min.css")
-    +css("assets/lib/@loadingio/bootstrap.ext/main/index.min.css")
-    +css("assets/lib/ldcover/main/index.min.css")
-    +css("assets/lib/ldloader/main/index.min.css")
-    +css("css/index.css")
-    +css("assets/lib/@xlfont/choose/dev/index.css")
-
-
+    +css([
+      {name: "bootstrap", path: "dist/css/bootstrap.min.css"},
+      {name: "@loadingio/bootstrap.ext", path: "index.min.css"},
+      {name: "ldiconfont", path: "index.min.css"},
+      {name: "ldcover", path: "index.min.css"},
+      {name: "ldloader", path: "index.min.css"},
+      {url: "css/index.css"},
+      {name: "@xlfont/choose", version: "dev", path: "index.css"}
+    ])
   body: #root
     include @static/assets/lib/@xlfont/choose/dev/index.pug
     .ldcv.default-size: .base: .inner: +xfc()
