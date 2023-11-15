@@ -127,7 +127,7 @@ parse-pb = (root, file) ->
       # simply ignored.
       # we may need to handle this for more complicated font format, such as variable fonts.
       # console.log "parse error", line
-  if family.license != \OFL => return null
+  if !(family.license in <[OFL APACHE2]>) => return null
   delete family.license
   return family
 

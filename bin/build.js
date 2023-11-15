@@ -163,7 +163,7 @@
         }
       } else {}
     }
-    if (family.license !== 'OFL') {
+    if (!((ref$ = family.license) === 'OFL' || ref$ === 'APACHE2')) {
       return null;
     }
     delete family.license;

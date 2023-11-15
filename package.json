@@ -3,7 +3,7 @@
   "name": "@xlfont/choose",
   "license": "MIT",
   "description": "font chooser widget for building your website",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "files": [
     "dist/**/*",
     "bin/**/*"
@@ -69,7 +69,7 @@
   },
   "peerDependencies": {
     "@loadingio/vscroll": "^0.0.11",
-    "ldloader": "^3.0.2",
+    "ldloader": "^3.0.3",
     "ldview": "^1.4.0",
     "proxise": "^1.0.1"
   },
@@ -80,7 +80,7 @@
     "@xlfont/load": "^2.1.3",
     "fs-extra": "^11.1.1",
     "js-yaml": "^3.14.1",
-    "ldloader": "^3.0.2",
+    "ldloader": "^3.0.3",
     "ldview": "^1.4.0",
     "pngquant": "^4.2.0",
     "progress": "^2.0.0",
