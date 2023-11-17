@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.0.25
+
+ - remove unused log
+
+
 ## v0.0.24
 
  - correctly support limit flag.

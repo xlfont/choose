@@ -161,7 +161,6 @@
     _limited: function(arg$){
       var font, isUpload, fn, limited;
       font = arg$.font, isUpload = arg$.isUpload;
-      console.log(font, in$(font, this.meta.family));
       fn = isUpload || !in$(font, this.meta.family) ? 'upload' : 'state';
       limited = !!(typeof this.opt[fn] !== 'function'
         ? false

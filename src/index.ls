@@ -61,7 +61,6 @@ xfc.prototype = Object.create(Object.prototype) <<< do
             f.limited = @_limited {font: opt}
             return font.xfont = f
   _limited: ({font, is-upload}) ->
-    console.log font, (font in @meta.family)
     fn = if is-upload or !(font in @meta.family) => \upload else \state
     limited = !!(if typeof(@opt[fn]) != \function => false
     else @opt[fn]({font, type: \limited}))
