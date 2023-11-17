@@ -159,9 +159,17 @@
       });
     },
     _limited: function(arg$){
-      var font, isUpload, fn, limited;
+      var font, isUpload, n, matched, fn, limited;
       font = arg$.font, isUpload = arg$.isUpload;
-      fn = isUpload || !in$(font, this.meta.family) ? 'upload' : 'state';
+      if (font) {
+        n = (font.n || font.name).toLowerCase();
+        matched = this.meta.family.filter(function(it){
+          return it.n.toLowerCase() === n;
+        })[0];
+      } else {
+        matched = false;
+      }
+      fn = isUpload || !matched ? 'upload' : 'state';
       limited = !!(typeof this.opt[fn] !== 'function'
         ? false
         : this.opt[fn]({

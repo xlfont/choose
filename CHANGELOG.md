@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.0.26
+
+ - use font name instead of font object to match font in meta font list.
+
+
 ## v0.0.25
 
  - remove unused log

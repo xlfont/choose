@@ -61,7 +61,11 @@ xfc.prototype = Object.create(Object.prototype) <<< do
             f.limited = @_limited {font: opt}
             return font.xfont = f
   _limited: ({font, is-upload}) ->
-    fn = if is-upload or !(font in @meta.family) => \upload else \state
+    if font =>
+      n = (font.n or font.name).toLowerCase!
+      matched = @meta.family.filter(->it.n.toLowerCase! == n).0
+    else matched = false
+    fn = if is-upload or !matched => \upload else \state
     limited = !!(if typeof(@opt[fn]) != \function => false
     else @opt[fn]({font, type: \limited}))
     if font => font.limited = limited
