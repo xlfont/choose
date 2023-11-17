@@ -57,7 +57,16 @@ xfc.prototype = Object.create(Object.prototype) <<< do
         w = @meta.index.weight[font.w]
         path = "#{@_url.links}/#{family.n}/#{s}/#{w}#{if font.x => '' else '.ttf'}"
         xfl.load {path, name: family.n}
-          .then -> return font.xfont = it
+          .then (f) ~>
+            f.limited = @_limited {font: opt}
+            return font.xfont = f
+  _limited: ({font, is-upload}) ->
+    console.log font, (font in @meta.family)
+    fn = if is-upload or !(font in @meta.family) => \upload else \state
+    limited = !!(if typeof(@opt[fn]) != \function => false
+    else @opt[fn]({font, type: \limited}))
+    if font => font.limited = limited
+    return limited
 
   render: ->
     @ldld.on!
@@ -111,9 +120,7 @@ xfc.prototype = Object.create(Object.prototype) <<< do
               id = "custom-" + (parseInt(Math.random! * Date.now!) + Date.now!).toString(36)
               url = URL.createObjectURL file
               xfc.{}_custom-font[id] = font = new xfl.xlfont path: url, name: id, is-xl: false
-              limited = if typeof(@opt.upload) != \function => false
-              else @opt.upload({font, type: \limited})
-              if limited? => font.limited = limited
+              @_limited {font, upload: true}
               font.init!
                 .finally ~>
                   node.value = ''
@@ -129,9 +136,7 @@ xfc.prototype = Object.create(Object.prototype) <<< do
             "cur-cat": ({node}) -> if BSN? => new BSN.Dropdown node
           handler:
             "upload-button": ({node}) ~>
-              limited = if typeof(@opt.upload) != \function => false
-              else @opt.upload type: \limited
-              if limited? => node.classList.toggle \limited, limited
+              node.classList.toggle \limited, !!@_limited({is-upload: true})
             "cur-subset": ({node}) ~>
               node.textContent = @cfg.subset or 'all'
               node.classList.toggle \active, !!(@cfg.subset and @cfg.subset != 'all')
@@ -168,17 +173,13 @@ xfc.prototype = Object.create(Object.prototype) <<< do
                   .finally ~>
                     @fire \load.end
                     @ldld.off!
-                  .then ~>
-                    it.limited = @opt.state {font: it, type: \limited}
-                    @fire \choose, it
+                  .then ~> @fire \choose, it
                   .catch ~>
                     console.error "[@xlfont/choose] font load failed: ", it
                     @fire \load.fail, it
               handler: ({node, data}) ~>
                 [k,c,s,idx] = [@cfg.keyword, @cfg.category, @cfg.subset, @meta.index]
-                if @opt.state =>
-                  limited = @opt.state({font: data, type: \limited})
-                  if limited? => node.classList.toggle \limited, limited
+                node.classList.toggle \limited, @_limited {font: data}
                 node.classList.toggle \d-none, (
                   !data.n or
                   (k and !~(('' + data.n + data.d).toLowerCase!).indexOf(k.toLowerCase!)) or

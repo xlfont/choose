@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.0.24
+
+ - correctly support limit flag.
+
+
 ## v0.0.23
 
  - add `apache2` license fonts

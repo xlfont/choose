@@ -150,10 +150,29 @@
         return xfl.load({
           path: path,
           name: family.n
-        }).then(function(it){
-          return font.xfont = it;
+        }).then(function(f){
+          f.limited = this$._limited({
+            font: opt
+          });
+          return font.xfont = f;
         });
       });
+    },
+    _limited: function(arg$){
+      var font, isUpload, fn, limited;
+      font = arg$.font, isUpload = arg$.isUpload;
+      console.log(font, in$(font, this.meta.family));
+      fn = isUpload || !in$(font, this.meta.family) ? 'upload' : 'state';
+      limited = !!(typeof this.opt[fn] !== 'function'
+        ? false
+        : this.opt[fn]({
+          font: font,
+          type: 'limited'
+        }));
+      if (font) {
+        font.limited = limited;
+      }
+      return limited;
     },
     render: function(){
       var _, this$ = this;
@@ -246,7 +265,7 @@
             },
             change: {
               upload: function(arg$){
-                var node, file, id, url, font, limited;
+                var node, file, id, url, font;
                 node = arg$.node;
                 file = node.files ? node.files[0] : null;
                 if (!file) {
@@ -260,15 +279,10 @@
                   name: id,
                   isXl: false
                 });
-                limited = typeof this$.opt.upload !== 'function'
-                  ? false
-                  : this$.opt.upload({
-                    font: font,
-                    type: 'limited'
-                  });
-                if (limited != null) {
-                  font.limited = limited;
-                }
+                this$._limited({
+                  font: font,
+                  upload: true
+                });
                 return font.init()['finally'](function(){
                   node.value = '';
                   this$.fire('load.end');
@@ -300,16 +314,11 @@
           },
           handler: {
             "upload-button": function(arg$){
-              var node, limited;
+              var node;
               node = arg$.node;
-              limited = typeof this$.opt.upload !== 'function'
-                ? false
-                : this$.opt.upload({
-                  type: 'limited'
-                });
-              if (limited != null) {
-                return node.classList.toggle('limited', limited);
-              }
+              return node.classList.toggle('limited', !!this$._limited({
+                isUpload: true
+              }));
             },
             "cur-subset": function(arg$){
               var node;
@@ -385,10 +394,6 @@
                     this$.fire('load.end');
                     return this$.ldld.off();
                   }).then(function(it){
-                    it.limited = this$.opt.state({
-                      font: it,
-                      type: 'limited'
-                    });
                     return this$.fire('choose', it);
                   })['catch'](function(it){
                     console.error("[@xlfont/choose] font load failed: ", it);
@@ -397,18 +402,12 @@
                 }
               },
               handler: function(arg$){
-                var node, data, ref$, k, c, s, idx, limited;
+                var node, data, ref$, k, c, s, idx;
                 node = arg$.node, data = arg$.data;
                 ref$ = [this$.cfg.keyword, this$.cfg.category, this$.cfg.subset, this$.meta.index], k = ref$[0], c = ref$[1], s = ref$[2], idx = ref$[3];
-                if (this$.opt.state) {
-                  limited = this$.opt.state({
-                    font: data,
-                    type: 'limited'
-                  });
-                  if (limited != null) {
-                    node.classList.toggle('limited', limited);
-                  }
-                }
+                node.classList.toggle('limited', this$._limited({
+                  font: data
+                }));
                 return node.classList.toggle('d-none', !data.n || (k && !~('' + data.n + data.d).toLowerCase().indexOf(k.toLowerCase())) || !(!c || c === 'all' || idx.category.indexOf(c) === data.c) || !(!s || s === 'all' || in$(idx.subset.indexOf(s), data.s)));
               },
               init: function(arg$){
