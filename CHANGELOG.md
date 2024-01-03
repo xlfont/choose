@@ -1,5 +1,14 @@
 # Change Logs
 
+## v0.0.27
+
+ - update document
+ - add `file` and `limit` in font object `mod` field for tracking uploaded file
+ - support loading by uploaded font (with blob provided)
+ - move code for preparing for uploaded font into separated function to support
+   both font uploading from user interaction and from chooser.load function call.
+
+
 ## v0.0.26
 
  - use font name instead of font object to match font in meta font list.
