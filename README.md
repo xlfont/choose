@@ -56,13 +56,27 @@ Check `web/src/pug/index.pug` for example with `ldcover` and `@xlfont/choose`.
  - `config(opt)`: update config, including `state`, `order` and `upload` option in constructor parameters.
  - `render()`: render font list.
  - `load(opt)`: load a font based on the given parameter `opt`.
-   - returns a Promise which resolves with the desired font, or rejects if font is not found.
+   - returns a Promise which resolves with the desired font(a xlfont object), or rejects if font is not found.
    - `opt` can be either:
      - a number: return the font by the given index from the font family list.
      - a string: return the font with the exact same name to `opt`, case insensitive.
-     - a simplified font object such as `{name, style, weight}`
+     - a simplified font object such as `{name, style, weight, mod: {file}}`.
+       - `mod.file` is an object used to load uploaded fonts.
+         - it contains following fields(which will be used to call `fontFromFile`):
+           - mandatory field:
+             - `blob`: font file blob. mandatory. for uploaded fonts.
+           - fields from File object:
+             - `name`: font file name.
+             - `lastModified`: timestamp of file modified time
+             - `size`: file size
+             - `type`: file mimetype.
+         - can contains other fields depending on user spec, for example:
+           - `digest`: file digest (e.g., md5)
+           - `key`: file key for accessing it from a data storage.
      - the font family object itself
-
+ - `fontFromFile(opt)`: load a font from file. opt:
+   - `file`: either a file object (Blob) or the `mod.file` object (see `load(opt)` above for more info)
+   - `name`: font name. use `file.name` if omitted.
 
 ## Class API
 
@@ -79,6 +93,14 @@ Check `web/src/pug/index.pug` for example with `ldcover` and `@xlfont/choose`.
  - `load.start`: fired when a font is loading. ( after user clicking a font )
  - `load.end`: fired when a font load ended. ( either succeeded or failed )
  - `load.fail`: fired when a font is failed to load.
+
+
+## Xlfont Extension
+
+`@xlfont/choose` extends `xlfont` in `font.ext` with following fields:
+
+ - `limited`: indicate that this font is limited in usage when true.
+ - `blob`: blob for the uploaded font, if this font is uploaded by user.
 
 
 ## Metadata Generation

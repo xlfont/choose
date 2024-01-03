@@ -40,10 +40,13 @@ xfc.prototype = Object.create(Object.prototype) <<< do
     if opt.order and @meta => @meta.family.sort @opt.order
     @render!
   load: (opt) ->
+    font = null
     @init!
       .then ~>
         if !opt => return null
         if xfc.{}_custom-font[opt.name] => return xfc._custom-font[opt.name]
+        if opt.mod and opt.mod.file and opt.mod.file.blob =>
+          return @font-from-file({file: opt.mod.file, name: opt.name})
         family = if typeof(opt) == \number => @meta.family[opt]
         else if typeof(opt) == \string => @meta.family.filter(-> it.n.toLowerCase! == opt.toLowerCase!).0
         # simplified font obj {name, style, weight}
@@ -51,15 +54,17 @@ xfc.prototype = Object.create(Object.prototype) <<< do
         # font obj itself
         else opt
         if !family => return Promise.reject(new Error! <<< {message: "font not found", id: 404})
-        font = family.fonts.0
+        font := family.fonts.0
         if font.xfont => return Promise.resolve that
         s = @meta.index.style[font.s]
         w = @meta.index.weight[font.w]
         path = "#{@_url.links}/#{family.n}/#{s}/#{w}#{if font.x => '' else '.ttf'}"
-        xfl.load {path, name: family.n}
-          .then (f) ~>
-            f.limited = @_limited {font: opt}
-            return font.xfont = f
+        (f) <~ xfl.load {path, name: family.n} .then _
+        f.{}mod.limited = @_limited {font: opt}
+        f
+      .then (f) ->
+        if font => font.xfont = f
+        return f
   _limited: ({font, is-upload}) ->
     if font =>
       n = (font.n or font.name).toLowerCase!
@@ -68,7 +73,7 @@ xfc.prototype = Object.create(Object.prototype) <<< do
     fn = if is-upload or !matched => \upload else \state
     limited = !!(if typeof(@opt[fn]) != \function => false
     else @opt[fn]({font, type: \limited}))
-    if font => font.limited = limited
+    if font => font.{}mod.limited = limited
     return limited
 
   render: ->
@@ -81,6 +86,32 @@ xfc.prototype = Object.create(Object.prototype) <<< do
     # render may be a timing consuming job and thus may block UI.
     if @_rendered => return _!
     return new Promise (res, rej) -> setTimeout (-> _!then -> res it), 50
+
+  font-from-file: ({file, name}) ->
+    @ldld.on!
+    if !name => name = "custom-" + (parseInt(Math.random! * Date.now!) + Date.now!).toString(36)
+    url = URL.createObjectURL(file.blob or file)
+    ext = if /(ttf|otf|woff2|woff)$/.exec(file.type or '') => that.1 else \ttf
+    xfc.{}_custom-font[name] = font = new xfl.xlfont path: url, name: name, is-xl: false, ext: ext
+    xfl.track font
+    # keep blob in mod.file for:
+    # 1. indicate an uploaded font
+    # 2. for data source to save/load
+    # we also track common file fields such as lastModified, name, size, type here,
+    # yet additional info such as digest or key can be used by caller.
+    font.{}mod.file = file{lastModified, name, size, type} <<< {blob: file.blob or file}
+    @_limited {font, is-upload: true}
+    font.init!
+      .finally ~>
+        @fire \load.end
+        @ldld.off!
+      .then ~> @fire \choose, font
+      .then -> return font
+      .catch ~>
+        console.error "[@xlfont/choose] font load failed: ", it
+        @fire \load.fail, it
+        return null
+
   _init: ->
     p = new Promise (res, rej) ~>
       xhr = new XMLHttpRequest!
@@ -118,22 +149,9 @@ xfc.prototype = Object.create(Object.prototype) <<< do
             click: cancel: ~> @fire \choose, null
             change: upload: ({node}) ~>
               file = if node.files => node.files.0 else null
-              if !file => return node.value = ''
-              @ldld.on!
-              id = "custom-" + (parseInt(Math.random! * Date.now!) + Date.now!).toString(36)
-              url = URL.createObjectURL file
-              xfc.{}_custom-font[id] = font = new xfl.xlfont path: url, name: id, is-xl: false
-              @_limited {font, upload: true}
-              font.init!
-                .finally ~>
-                  node.value = ''
-                  @fire \load.end
-                  @ldld.off!
-                .then ~> @fire \choose, font
-                .catch ~>
-                  console.error "[@xlfont/choose] font load failed: ", it
-                  @fire \load.fail, it
-
+              node.value = ''
+              if !file => return
+              @font-from-file {file, name: if file.name => "#{file.name} from Upload" else null}
           init:
             "cur-subset": ({node}) -> if BSN? => new BSN.Dropdown node
             "cur-cat": ({node}) -> if BSN? => new BSN.Dropdown node

@@ -119,14 +119,21 @@
       });
     },
     load: function(opt){
-      var this$ = this;
+      var font, this$ = this;
+      font = null;
       return this.init().then(function(){
-        var family, ref$, font, that, s, w, path;
+        var family, ref$, that, s, w, path;
         if (!opt) {
           return null;
         }
         if ((xfc._customFont || (xfc._customFont = {}))[opt.name]) {
           return xfc._customFont[opt.name];
+        }
+        if (opt.mod && opt.mod.file && opt.mod.file.blob) {
+          return this$.fontFromFile({
+            file: opt.mod.file,
+            name: opt.name
+          });
         }
         family = typeof opt === 'number'
           ? this$.meta.family[opt]
@@ -151,11 +158,16 @@
           path: path,
           name: family.n
         }).then(function(f){
-          f.limited = this$._limited({
+          (f.mod || (f.mod = {})).limited = this$._limited({
             font: opt
           });
-          return font.xfont = f;
+          return f;
         });
+      }).then(function(f){
+        if (font) {
+          font.xfont = f;
+        }
+        return f;
       });
     },
     _limited: function(arg$){
@@ -177,7 +189,7 @@
           type: 'limited'
         }));
       if (font) {
-        font.limited = limited;
+        (font.mod || (font.mod = {})).limited = limited;
       }
       return limited;
     },
@@ -200,6 +212,45 @@
             return res(it);
           });
         }, 50);
+      });
+    },
+    fontFromFile: function(arg$){
+      var file, name, url, ext, that, font, ref$, this$ = this;
+      file = arg$.file, name = arg$.name;
+      this.ldld.on();
+      if (!name) {
+        name = "custom-" + (parseInt(Math.random() * Date.now()) + Date.now()).toString(36);
+      }
+      url = URL.createObjectURL(file.blob || file);
+      ext = (that = /(ttf|otf|woff2|woff)$/.exec(file.type || '')) ? that[1] : 'ttf';
+      (xfc._customFont || (xfc._customFont = {}))[name] = font = new xfl.xlfont({
+        path: url,
+        name: name,
+        isXl: false,
+        ext: ext
+      });
+      xfl.track(font);
+      (font.mod || (font.mod = {})).file = (ref$ = {
+        lastModified: file.lastModified,
+        name: file.name,
+        size: file.size,
+        type: file.type
+      }, ref$.blob = file.blob || file, ref$);
+      this._limited({
+        font: font,
+        isUpload: true
+      });
+      return font.init()['finally'](function(){
+        this$.fire('load.end');
+        return this$.ldld.off();
+      }).then(function(){
+        return this$.fire('choose', font);
+      }).then(function(){
+        return font;
+      })['catch'](function(it){
+        console.error("[@xlfont/choose] font load failed: ", it);
+        this$.fire('load.fail', it);
+        return null;
       });
     },
     _init: function(){
@@ -272,33 +323,16 @@
             },
             change: {
               upload: function(arg$){
-                var node, file, id, url, font;
+                var node, file;
                 node = arg$.node;
                 file = node.files ? node.files[0] : null;
+                node.value = '';
                 if (!file) {
-                  return node.value = '';
+                  return;
                 }
-                this$.ldld.on();
-                id = "custom-" + (parseInt(Math.random() * Date.now()) + Date.now()).toString(36);
-                url = URL.createObjectURL(file);
-                (xfc._customFont || (xfc._customFont = {}))[id] = font = new xfl.xlfont({
-                  path: url,
-                  name: id,
-                  isXl: false
-                });
-                this$._limited({
-                  font: font,
-                  upload: true
-                });
-                return font.init()['finally'](function(){
-                  node.value = '';
-                  this$.fire('load.end');
-                  return this$.ldld.off();
-                }).then(function(){
-                  return this$.fire('choose', font);
-                })['catch'](function(it){
-                  console.error("[@xlfont/choose] font load failed: ", it);
-                  return this$.fire('load.fail', it);
+                return this$.fontFromFile({
+                  file: file,
+                  name: file.name ? file.name + " from Upload" : null
                 });
               }
             }
