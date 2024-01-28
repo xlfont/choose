@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.0.28
+
+ - support `metadata(m)` api for manually provide metadata and skip ajax completely
+
+
 ## v0.0.27
 
  - update document

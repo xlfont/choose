@@ -47,6 +47,7 @@
       meta: opt.meta,
       links: opt.links
     };
+    this._metadata = opt.metadata;
     ['meta', 'links'].map(function(n){
       if (!this$._url[n] && xfc._url[n]) {
         return this$._url[n] = xfc._url[n];
@@ -102,6 +103,11 @@
         results$.push(cb.apply(this, v));
       }
       return results$;
+    },
+    metadata: function(it){
+      return arguments.length
+        ? this._metadata = it
+        : this._metadata;
     },
     config: function(opt){
       var this$ = this;
@@ -255,8 +261,14 @@
     },
     _init: function(){
       var p, this$ = this;
+      if (this.meta) {
+        return;
+      }
       p = new Promise(function(res, rej){
         var xhr;
+        if (this$._metadata) {
+          return res(this$._metadata);
+        }
         xhr = new XMLHttpRequest();
         xhr.addEventListener('readystatechange', function(){
           var e;
@@ -267,21 +279,11 @@
             return rej(xhr.responseText);
           }
           try {
-            this$.meta = JSON.parse(xhr.responseText);
-            this$.meta.family.forEach(function(n, i){
-              return n.i = i;
-            });
-            this$.meta.family = this$.meta.family.filter(function(it){
-              return it.n;
-            });
-            if (this$.opt.order) {
-              this$.meta.family.sort(this$.opt.order);
-            }
+            return res(JSON.parse(xhr.responseText));
           } catch (e$) {
             e = e$;
             return rej(e);
           }
-          return res();
         });
         xhr.open('GET', this$._url.meta + "/meta.json");
         xhr.onerror = function(it){
@@ -289,8 +291,18 @@
         };
         return xhr.send();
       });
-      return p.then(function(){
+      return p.then(function(m){
         var k, ref$, v;
+        this$.meta = m;
+        this$.meta.family.forEach(function(n, i){
+          return n.i = i;
+        });
+        this$.meta.family = this$.meta.family.filter(function(it){
+          return it.n;
+        });
+        if (this$.opt.order) {
+          this$.meta.family.sort(this$.opt.order);
+        }
         if (!this$.root) {
           return;
         }

@@ -19,6 +19,7 @@ i18n =
 xfc = (opt = {}) ->
   @opt = opt
   @_url = opt{meta,links}
+  @_metadata = opt.metadata
   <[meta links]>.map (n) ~> if !@_url[n] and xfc._url[n] => @_url[n] = xfc._url[n]
   @root = if typeof(opt.root) == \string => document.querySelector(opt.root) else opt.root
   @_init-render = if opt.init-render? => opt.init-render else false
@@ -33,6 +34,7 @@ xfc.url = (o = {}) -> return if !arguments.length => (xfc._url or {}) else (xfc.
 xfc.prototype = Object.create(Object.prototype) <<< do
   on: (n, cb) -> (if Array.isArray(n) => n else [n]).map (n) ~> @evt-handler.[][n].push cb
   fire: (n, ...v) -> for cb in (@evt-handler[n] or []) => cb.apply @, v
+  metadata: -> return if arguments.length => @_metadata = it else @_metadata
   config: (opt = {}) ->
     <[state upload order]>.for-each ~>
       if opt[it]? => @opt[it] = opt[it]
@@ -113,24 +115,26 @@ xfc.prototype = Object.create(Object.prototype) <<< do
         return null
 
   _init: ->
+    if @meta => return
     p = new Promise (res, rej) ~>
+      if @_metadata => return res @_metadata
       xhr = new XMLHttpRequest!
       xhr.addEventListener \readystatechange, ~>
         if xhr.readyState != 4 => return
         if xhr.status != 200 => return rej xhr.responseText
         try
-          @meta = JSON.parse(xhr.responseText)
-          @meta.family.forEach (n,i) -> n.i = i
-          @meta.family = @meta.family.filter(->it.n)
-          if @opt.order => @meta.family.sort @opt.order
+          return res JSON.parse(xhr.responseText)
         catch e
           return rej e
-        res!
       xhr.open \GET, ("#{@_url.meta}/meta.json")
       xhr.onerror = -> return rej it
       xhr.send!
     p
-      .then ~>
+      .then (m) ~>
+        @meta = m
+        @meta.family.forEach (n,i) -> n.i = i
+        @meta.family = @meta.family.filter(->it.n)
+        if @opt.order => @meta.family.sort @opt.order
         if !@root => return
         @cfg = {}
 
