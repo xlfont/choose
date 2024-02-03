@@ -34,7 +34,7 @@ xfc.url = (o = {}) -> return if !arguments.length => (xfc._url or {}) else (xfc.
 xfc.prototype = Object.create(Object.prototype) <<< do
   on: (n, cb) -> (if Array.isArray(n) => n else [n]).map (n) ~> @evt-handler.[][n].push cb
   fire: (n, ...v) -> for cb in (@evt-handler[n] or []) => cb.apply @, v
-  metadata: -> return if arguments.length => @_metadata = it else @_metadata
+  metadata: -> return if arguments.length => @_metadata = JSON.parse(JSON.stringify(it)) else @_metadata
   config: (opt = {}) ->
     <[state upload order]>.for-each ~>
       if opt[it]? => @opt[it] = opt[it]

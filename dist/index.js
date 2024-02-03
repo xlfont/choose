@@ -106,7 +106,7 @@
     },
     metadata: function(it){
       return arguments.length
-        ? this._metadata = it
+        ? this._metadata = JSON.parse(JSON.stringify(it))
         : this._metadata;
     },
     config: function(opt){

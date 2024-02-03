@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.0.29
+
+ - clone metadata locally to prevent pollute source object
+
+
 ## v0.0.28
 
  - support `metadata(m)` api for manually provide metadata and skip ajax completely
